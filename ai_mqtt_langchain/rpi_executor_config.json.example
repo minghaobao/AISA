@@ -1,0 +1,8 @@
+{
+    "device_id": "device_001",
+    "mqtt_host": "localhost",
+    "mqtt_port": 1883,
+    "mqtt_username": "mqtt_user",
+    "mqtt_password": "mqtt_password",
+    "heartbeat_interval": 30
+} 
