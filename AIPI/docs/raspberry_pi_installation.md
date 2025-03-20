@@ -1,235 +1,300 @@
-# 树莓派安装指南
+# 树莓派端安装指南
 
-本文档提供了在树莓派上安装和配置AI命令执行系统的详细说明。
+本指南详细说明如何在树莓派设备上安装和配置AIPI客户端。
 
-## 系统要求
+## 1. 环境要求
 
-- 树莓派 3B+ 或更高版本
-- Raspberry Pi OS (原Raspbian) Buster或更新版本
-- 至少2GB的可用存储空间
-- 网络连接（有线或无线）
+- 树莓派 3B+ 或更高版本（推荐树莓派 4B）
+- 树莓派 OS (Bullseye 或更新版本)
+- Python 3.8+
+- 适当的GPIO连接设备（继电器、传感器等）
+- 网络连接（有线网络或WiFi）
 
-## 基础系统设置
+## 2. 硬件准备
 
-### 1. 更新系统
+根据你的具体需求，你可能需要以下硬件：
 
-首先，确保您的树莓派系统是最新的：
+- 继电器模块（控制高功率设备）
+- 风扇（需要PWM控制的推荐使用适配器）
+- LED灯或其他照明设备
+- DHT11/DHT22温湿度传感器
+- 其他GPIO兼容的传感器和执行器
+
+### 2.1 GPIO连接示例
+
+以下是一些常见设备的GPIO连接示例：
+
+**继电器连接**
+- GPIO17 -> 继电器1输入
+- GPIO18 -> 继电器2输入
+- 5V -> 继电器VCC
+- GND -> 继电器GND
+
+**DHT22温湿度传感器**
+- GPIO4 -> DHT22数据引脚
+- 3.3V -> DHT22 VCC
+- GND -> DHT22 GND
+
+**LED灯**
+- GPIO24 -> LED阳极（通过220-330Ω电阻）
+- GND -> LED阴极
+
+## 3. 软件安装
+
+### 3.1 系统准备
+
+确保你的树莓派系统已更新：
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
 ```
 
-### 2. 安装必要的依赖
+安装必要的系统依赖：
 
 ```bash
-# 安装Python3和pip（大多数树莓派OS已预装）
-sudo apt install -y python3 python3-pip
-
-# 安装系统依赖
-sudo apt install -y git mosquitto mosquitto-clients
-
-# 设置并启动MQTT服务器
-sudo systemctl enable mosquitto
-sudo systemctl start mosquitto
+sudo apt install -y python3-pip python3-dev python3-setuptools git
+sudo apt install -y libgpiod2  # GPIO支持
 ```
 
-## 安装AI命令执行系统
+### 3.2 获取代码
 
-### 1. 克隆代码仓库
+克隆AIPI代码库：
 
 ```bash
-git clone https://github.com/yourusername/ai-command-system.git
-cd ai-command-system
+git clone https://github.com/yourusername/AIPI.git
+cd AIPI/raspberry_pi
 ```
 
-### 2. 安装Python依赖
+### 3.3 安装Python依赖
+
+创建并激活虚拟环境（推荐）：
 
 ```bash
-pip3 install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate  # 在Windows上使用 venv\Scripts\activate
 ```
 
-如果您遇到内存问题，可以尝试逐个安装依赖：
+安装项目依赖：
 
 ```bash
-pip3 install paho-mqtt psutil python-dotenv
+pip install -r requirements.txt
 ```
 
-### 3. 配置执行器
+## 4. 配置
 
-创建并编辑配置文件：
+### 4.1 基本配置
+
+复制示例配置文件：
 
 ```bash
-cp ai_mqtt_langchain/rpi_executor_config.json.example ai_mqtt_langchain/rpi_executor_config.json
-nano ai_mqtt_langchain/rpi_executor_config.json
+cp .env.example .env
 ```
 
-根据需要修改配置内容：
+编辑`.env`文件，设置以下必要参数：
 
-```json
-{
-    "device_id": "rpi_001",  # 为您的设备设置一个唯一ID
-    "mqtt_host": "localhost",  # 如果MQTT服务器在另一台机器上，更改此值
-    "mqtt_port": 1883,
-    "mqtt_username": "mqtt_user",  # 如果配置了MQTT认证
-    "mqtt_password": "mqtt_password",  # 如果配置了MQTT认证
-    "heartbeat_interval": 30
-}
+```
+# 设备标识符（必需-唯一标识设备）
+DEVICE_ID=raspberry_pi_001
+
+# MQTT连接配置（必需-用于数据传输和命令接收）
+MQTT_HOST=your_mqtt_server_address
+MQTT_PORT=1883
+MQTT_USERNAME=your_username
+MQTT_PASSWORD=your_password
+
+# 日志配置
+LOG_LEVEL=INFO
+LOG_FILE=raspberry_pi.log
+
+# 数据收集配置
+DATA_COLLECTION_INTERVAL=60
+COLLECT_CPU=True
+COLLECT_MEMORY=True
+COLLECT_DISK=True
+COLLECT_NETWORK=True
+COLLECT_TEMPERATURE=True
 ```
 
-## 设置自启动服务
+如果需要使用LangChain功能，还需要设置OpenAI API密钥：
 
-为了确保命令执行器在树莓派启动时自动运行，我们可以创建一个系统服务：
+```
+# OpenAI API配置（用于LangChain处理器）
+OPENAI_API_KEY=your_openai_api_key
+LLM_MODEL=gpt-3.5-turbo
+LLM_TEMPERATURE=0.1
+```
 
-### 1. 创建服务文件
+### 4.2 硬件配置
+
+创建`.env.local`文件来配置特定于设备的硬件设置：
 
 ```bash
-sudo nano /etc/systemd/system/rpi-command-executor.service
+cp .env.example .env.local
 ```
 
-### 2. 添加以下内容
+编辑`.env.local`文件，根据你的硬件连接设置GPIO引脚：
+
+```
+# 设备标识符（覆盖.env中的默认值）
+DEVICE_ID=raspberry_pi_kitchen_001
+
+# GPIO引脚配置
+RELAY_1_PIN=17
+RELAY_2_PIN=18
+FAN_1_PIN=22
+FAN_1_PWM_PIN=23
+LIGHT_1_PIN=24
+
+# 传感器引脚
+DHT_SENSOR_PIN=4
+```
+
+## 5. 运行
+
+### 5.1 启动所有服务
+
+要启动所有服务（MQTT客户端、设备控制器和LangChain处理器）：
+
+```bash
+python rpi_run.py
+```
+
+### 5.2 启动特定服务
+
+如果你只想启动特定的服务：
+
+```bash
+# 只启动MQTT客户端
+python rpi_run.py --mqtt
+
+# 只启动设备控制器
+python rpi_run.py --device
+
+# 只启动LangChain处理器
+python rpi_run.py --processor
+```
+
+### 5.3 设置开机自启
+
+为了让树莓派在启动时自动运行AIPI客户端，你可以创建一个systemd服务：
+
+创建服务文件：
+
+```bash
+sudo nano /etc/systemd/system/aipi.service
+```
+
+添加以下内容（需要根据你的安装路径和配置调整）：
 
 ```
 [Unit]
-Description=Raspberry Pi Command Executor
+Description=AIPI Raspberry Pi Client
 After=network.target mosquitto.service
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/ai-command-system/ai_mqtt_langchain/rpi_command_executor.py
-WorkingDirectory=/home/pi/ai-command-system
-StandardOutput=inherit
-StandardError=inherit
-Restart=always
 User=pi
+WorkingDirectory=/home/pi/AIPI/raspberry_pi
+ExecStart=/home/pi/AIPI/raspberry_pi/venv/bin/python rpi_run.py
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-注意：请根据您的安装路径调整上述文件中的路径。
-
-### 3. 启用并启动服务
+启用并启动服务：
 
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable rpi-command-executor.service
-sudo systemctl start rpi-command-executor.service
+sudo systemctl enable aipi.service
+sudo systemctl start aipi.service
 ```
 
-### 4. 检查服务状态
+查看服务状态：
 
 ```bash
-sudo systemctl status rpi-command-executor.service
+sudo systemctl status aipi.service
 ```
 
-## 测试系统
+## 6. 测试
 
-安装完成后，您可以通过以下方式测试系统是否正常工作：
+### 6.1 测试设备控制
 
-### 1. 检查日志
+你可以通过MQTT消息测试设备控制。使用任何MQTT客户端（如MQTT Explorer或mosquitto_pub）发送命令：
 
 ```bash
-sudo journalctl -u rpi-command-executor.service -f
+# 打开继电器1
+mosquitto_pub -h your_mqtt_server -t "device/control" -m '{"device_id":"relay_1","action":"on"}'
+
+# 关闭继电器1
+mosquitto_pub -h your_mqtt_server -t "device/control" -m '{"device_id":"relay_1","action":"off"}'
+
+# 设置风扇速度
+mosquitto_pub -h your_mqtt_server -t "device/control" -m '{"device_id":"fan_1","action":"speed","parameters":{"speed":50}}'
 ```
 
-### 2. 发送测试命令
+### 6.2 测试数据收集
 
-在服务器端运行：
+设备数据将自动按配置的间隔发布到MQTT主题。你可以订阅数据主题查看发布的数据：
 
 ```bash
-python3 ai_mqtt_langchain/send_rpi_command.py --device-id rpi_001 --command "echo 测试成功" --mqtt-host <树莓派IP地址>
+mosquitto_sub -h your_mqtt_server -t "device/raspberry_pi_001/data" -v
 ```
 
-如果一切正常，您应该能在日志中看到命令执行结果。
+### 6.3 测试自然语言命令
 
-## 优化树莓派性能
-
-对于长时间运行的应用，可以考虑以下优化：
-
-### 1. 增加交换空间
+如果配置了LangChain处理器，你可以通过以下主题发送自然语言命令：
 
 ```bash
-sudo dphys-swapfile swapoff
-sudo nano /etc/dphys-swapfile
-# 修改 CONF_SWAPSIZE=100 为 CONF_SWAPSIZE=1024
-sudo dphys-swapfile setup
-sudo dphys-swapfile swapon
+mosquitto_pub -h your_mqtt_server -t "langchain/process/raspberry_pi_001" -m '{"query":"打开客厅的灯","device_id":"raspberry_pi_001"}'
 ```
 
-### 2. 控制CPU温度
+## 7. 故障排除
 
-```bash
-sudo apt install -y python3-gpiozero
-```
+### 7.1 MQTT连接问题
 
-然后可以使用以下命令监控温度：
+如果无法连接到MQTT服务器：
+- 确认MQTT服务器地址和端口正确
+- 验证用户名和密码
+- 检查网络连接和防火墙设置
+- 查看日志文件中的详细错误信息
 
-```bash
-vcgencmd measure_temp
-```
+### 7.2 GPIO权限问题
 
-## 常见问题解答
+如果遇到GPIO权限问题：
+- 确保你的用户在gpio组中：`sudo usermod -a -G gpio $USER`
+- 重新登录或重启树莓派应用权限更改
+- 使用sudo运行脚本（不推荐长期使用）
 
-### 1. 无法连接到MQTT服务器
+### 7.3 温度传感器故障
 
-检查MQTT服务是否运行：
+如果无法读取温度：
+- 检查传感器连接
+- 确认已安装所需库：`pip install adafruit-circuitpython-dht`
+- 可能需要安装系统依赖：`sudo apt install libgpiod2`
 
-```bash
-sudo systemctl status mosquitto
-```
+## 8. 高级配置
 
-确保防火墙允许1883端口通信：
+### 8.1 使用外部传感器
 
-```bash
-sudo ufw allow 1883
-```
+AIPI支持多种传感器。要添加自定义传感器，你需要：
 
-### 2. 权限问题
+1. 在`.env.local`文件中添加传感器引脚配置
+2. 修改`device_controller.py`添加传感器读取逻辑
+3. 调整数据收集代码收集新传感器数据
 
-如果遇到权限错误，确保执行器服务使用了正确的用户：
+### 8.2 优化性能
 
-```bash
-sudo chown -R pi:pi /home/pi/ai-command-system
-```
+对于资源受限的树莓派（如Pi Zero或3B），你可以：
 
-### 3. 设备不响应命令
+- 增加数据收集间隔减少CPU使用率
+- 禁用不必要的数据收集（如磁盘、网络）
+- 减小日志级别`LOG_LEVEL=WARNING`
+- 禁用LangChain处理器（运行`python rpi_run.py --mqtt --device`）
 
-确保设备ID在服务器和树莓派配置中一致，并检查日志以获取详细错误信息：
+## 9. 扩展阅读
 
-```bash
-sudo journalctl -u rpi-command-executor.service -n 50
-```
-
-## 进阶配置
-
-### 1. 配置MQTT TLS加密
-
-为增强安全性，可以配置MQTT使用TLS加密通信。请参考Mosquitto官方文档。
-
-### 2. 设置GPIO控制权限
-
-如果需要通过命令控制GPIO引脚，确保用户有足够权限：
-
-```bash
-sudo usermod -a -G gpio pi
-```
-
-### 3. 启用摄像头访问
-
-如果需要执行摄像头相关命令：
-
-```bash
-sudo raspi-config
-# 在Interface Options中启用Camera
-```
-
-## 更新系统
-
-要更新到最新版本：
-
-```bash
-cd ai-command-system
-git pull
-pip3 install -r requirements.txt --upgrade
-sudo systemctl restart rpi-command-executor.service
-``` 
+- [树莓派GPIO编程](https://www.raspberrypi.org/documentation/usage/gpio/)
+- [MQTT协议简介](https://mqtt.org/getting-started/)
+- [LangChain文档](https://python.langchain.com/en/latest/)
+- [设备控制器开发指南](extending_devices.md) 

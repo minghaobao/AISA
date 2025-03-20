@@ -1,10 +1,13 @@
+import os
+import re
+import json
 import logging
 import time
-import json
-from langchain.prompts.chat import ChatPromptTemplate
+from config import LOG_CONFIG, LLM_CONFIG, DEVICE_CONFIG
+from langchain_community.llms import OpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-from langchain.llms import OpenAI
-from config import LLM_CONFIG, LOG_CONFIG, DEVICE_RULES
+from langchain.prompts.chat import ChatPromptTemplate
 from influx_writer import write_to_influxdb
 from alert_manager import check_and_send_alert
 

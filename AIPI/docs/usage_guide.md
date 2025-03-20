@@ -1,236 +1,419 @@
-# AI命令执行系统使用指南
+# AIPI系统使用指南
 
-本文档提供了AI命令执行系统的详细使用说明，帮助您理解如何与系统交互，并充分利用其功能。
+本指南将介绍如何使用AIPI系统进行设备监控、命令执行和数据分析。
 
-## 系统概述
+## 1. 系统概述
 
-AI命令执行系统由以下几个主要组件组成：
+AIPI是一个AI驱动的物联网平台，允许您通过自然语言管理和控制连接的树莓派设备。系统包括以下主要组件：
 
-1. **服务器端**:
-   - 运行LangChain命令代理
-   - 处理自然语言请求转换为命令
-   - 通过MQTT发送命令并接收结果
+- **服务器端**：处理自然语言命令、存储数据和提供Web界面
+- **树莓派客户端**：运行在设备上，执行命令并收集数据
+- **MQTT中间件**：处理组件之间的通信
 
-2. **设备端**:
-   - 在树莓派或其他设备上运行
-   - 接收命令并执行
-   - 返回执行结果
-   - 定期发送状态更新
+## 2. 系统启动
 
-3. **MQTT服务器**:
-   - 在服务器端和设备端之间传递消息
-   - 支持多设备并行通信
+### 2.1 启动服务器
 
-## 准备工作
-
-在开始使用前，确保完成以下步骤：
-
-1. 按照[MQTT服务器部署指南](mqtt_server_setup.md)配置了MQTT服务器
-2. 按照[树莓派安装指南](raspberry_pi_installation.md)或Windows安装说明配置了设备
-3. 已获取OpenAI API密钥（用于LangChain和AI功能）
-
-## 基本使用流程
-
-### 1. 启动设备端命令执行器
-
-在树莓派或设备上运行：
+进入服务器目录并启动服务：
 
 ```bash
-python ai_mqtt_langchain/rpi_command_executor.py
+cd AIPI/server
+python server_run.py
 ```
 
-如果您已配置系统服务，它应该已自动启动。
+这将启动以下服务：
+- MQTT客户端（用于通信）
+- 数据收集服务（用于接收和存储设备数据）
+- LangChain处理器（用于自然语言处理）
+- Web服务器（用于Web界面）
 
-您可以检查设备端日志确认其是否正在运行：
+### 2.2 启动API服务器
+
+如果只需要API服务，可以单独启动：
 
 ```bash
-sudo journalctl -u rpi-command-executor.service -f
+cd AIPI/server
+python api-web.py
 ```
 
-### 2. 使用AI命令助手
+这将启动轻量级API服务器，提供设备控制和数据访问的接口。
 
-在服务器端运行：
+### 2.3 启动树莓派客户端
+
+在每个树莓派设备上，运行：
 
 ```bash
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_001
+cd AIPI/raspberry_pi
+python rpi_run.py
 ```
 
-系统将提示您输入问题或命令。例如：
+这将启动以下服务：
+- MQTT客户端（用于通信）
+- 设备控制器（用于GPIO控制）
+- 数据收集服务（用于收集设备数据）
+- LangChain处理器（用于本地处理命令）
+
+## 3. Web界面使用
+
+Web界面是管理和监控设备的主要方式。
+
+### 3.1 访问Web界面
+
+在浏览器中访问：
+```
+http://服务器IP地址:5000
+```
+
+默认登录凭据：
+- 用户名：`admin@aipi.system`
+- 密码：`admin`（请在首次登录后更改）
+
+### 3.2 使用API接口
+
+API服务器提供以下主要接口：
 
 ```
-请输入您的问题或命令: 检查树莓派的CPU温度和内存使用情况
+# 获取API状态
+GET http://服务器IP地址:5000/api/status
+
+# 登录认证
+POST http://服务器IP地址:5000/api/login
+Body: {"username": "user@example.com", "password": "password"}
+
+# 获取设备列表
+GET http://服务器IP地址:5000/api/devices
+
+# 获取特定设备信息
+GET http://服务器IP地址:5000/api/devices/{device_id}
+
+# 控制设备
+POST http://服务器IP地址:5000/api/devices/{device_id}/control
+Body: {"action": "on", "parameters": {}}
+
+# 获取设备历史数据
+GET http://服务器IP地址:5000/api/devices/{device_id}/history?start={timestamp}&end={timestamp}
+
+# 获取系统监控数据
+GET http://服务器IP地址:5000/api/monitor
 ```
 
-AI将分析您的请求，选择适当的Linux命令，发送到设备执行，并向您返回结果。
+所有API请求（除了登录）都需要在请求头中包含JWT令牌：
+```
+Authorization: Bearer {token}
+```
 
-### 3. 直接发送命令（不使用AI）
+### 3.3 仪表板
 
-如果您想直接发送特定命令而不经过AI处理，可以使用命令发送工具：
+仪表板显示：
+- 设备状态概览
+- 最近警报
+- 系统性能指标
+- 设备数据图表
+
+### 3.4 设备管理
+
+在设备页面，您可以：
+- 查看所有注册设备
+- 检查各设备状态（在线/离线）
+- 查看详细设备信息（CPU、内存、温度等）
+- 向设备发送控制命令
+
+### 3.5 命令控制中心
+
+命令控制中心允许您：
+- 使用自然语言发送命令到特定设备
+- 查看命令执行历史
+- 创建和保存常用命令模板
+
+示例命令：
+- "打开客厅的灯"
+- "关闭所有设备的继电器"
+- "将风扇速度设置为50%"
+- "报告厨房设备的温度"
+- "每小时执行一次系统状态检查"
+
+### 3.6 数据分析
+
+数据分析页面提供：
+- 设备历史数据图表
+- 性能趋势分析
+- 自定义报告生成
+- 数据导出功能
+
+## 4. 命令语法
+
+您可以通过Web界面或直接通过MQTT发送命令。
+
+### 4.1 设备控制命令
+
+基本设备命令使用以下JSON格式：
+
+```json
+{
+  "device_id": "设备ID",
+  "action": "动作名称",
+  "parameters": {
+    "参数名1": "参数值1",
+    "参数名2": "参数值2"
+  }
+}
+```
+
+常用命令示例：
+
+**打开继电器**
+```json
+{
+  "device_id": "raspberry_pi_001",
+  "action": "gpio_control",
+  "parameters": {
+    "pin": "relay_1",
+    "state": "on"
+  }
+}
+```
+
+**设置风扇速度**
+```json
+{
+  "device_id": "raspberry_pi_001",
+  "action": "gpio_control",
+  "parameters": {
+    "pin": "fan_1",
+    "pwm": 75
+  }
+}
+```
+
+**读取传感器**
+```json
+{
+  "device_id": "raspberry_pi_001",
+  "action": "read_sensor",
+  "parameters": {
+    "sensor": "temperature"
+  }
+}
+```
+
+### 4.2 自然语言命令
+
+当使用LangChain处理器时，您可以发送自然语言命令：
+
+```json
+{
+  "query": "打开客厅的灯",
+  "device_id": "raspberry_pi_001"
+}
+```
+
+系统将解析命令并执行相应操作。支持的命令类型：
+- 设备控制（开关灯、调节风扇等）
+- 传感器读取（获取温度、湿度等）
+- 状态查询（检查设备状态、网络连接等）
+- 定时任务（设置定时操作）
+- 条件控制（基于传感器值执行动作）
+
+### 4.3 通过MQTT直接发送命令
+
+使用任何MQTT客户端（如MQTT Explorer或mosquitto_pub）：
 
 ```bash
-python ai_mqtt_langchain/send_rpi_command.py --device-id rpi_001 --command "free -h && vcgencmd measure_temp"
+# 设备控制命令
+mosquitto_pub -h mqtt服务器地址 -t "device/control" -m '{"device_id":"raspberry_pi_001","action":"gpio_control","parameters":{"pin":"relay_1","state":"on"}}'
+
+# 自然语言命令
+mosquitto_pub -h mqtt服务器地址 -t "langchain/process/raspberry_pi_001" -m '{"query":"打开厨房的灯","device_id":"raspberry_pi_001"}'
 ```
 
-这将直接发送指定的命令到设备，并显示执行结果。
+## 5. 数据收集
 
-## 常用命令示例
+AIPI系统会自动收集设备数据。
 
-以下是一些您可以通过系统执行的常用命令示例：
+### 5.1 收集的数据类型
 
-### 系统信息
+- **系统数据**：
+  - CPU使用率
+  - 内存使用率
+  - 磁盘使用率
+  - 网络流量
+  - 系统温度
 
-**自然语言请求**：
-```
-请告诉我树莓派的系统信息
-```
+- **传感器数据**（取决于连接的传感器）：
+  - 温度和湿度（DHT传感器）
+  - 光照强度
+  - 运动检测
+  - 自定义传感器数据
 
-**AI可能执行的命令**：
-```bash
-uname -a && cat /etc/os-release
-```
+### 5.2 数据存储
 
-### 资源使用情况
+数据存储在InfluxDB中，使用以下信息：
+- 数据库：`aipi_metrics`
+- 测量：`device_metrics`
+- 标签：`device_id`、`metric_type`
 
-**自然语言请求**：
-```
-树莓派的资源使用情况如何？
-```
+### 5.3 数据查询示例
 
-**AI可能执行的命令**：
-```bash
-free -h && vcgencmd measure_temp && df -h && top -bn1 | head -15
-```
-
-### 网络连接
-
-**自然语言请求**：
-```
-检查树莓派的网络连接
-```
-
-**AI可能执行的命令**：
-```bash
-ifconfig && ping -c 4 8.8.8.8 && netstat -tuln
-```
-
-### 文件操作
-
-**自然语言请求**：
-```
-在桌面创建一个文件并写入当前日期
-```
-
-**AI可能执行的命令**：
-```bash
-echo "Current date: $(date)" > ~/Desktop/date_file.txt && cat ~/Desktop/date_file.txt
-```
-
-## 高级用法
-
-### 多轮对话
-
-AI命令助手支持多轮对话。例如：
+通过Web界面或直接使用InfluxDB查询语言：
 
 ```
-用户: 查看当前目录下的文件
-AI: [执行 ls -la 命令并显示结果]
-
-用户: 创建一个名为test的目录
-AI: [执行 mkdir test 命令]
-
-用户: 进入这个目录并创建一个文件
-AI: [执行 cd test && touch sample.txt 命令]
+SELECT mean("value") FROM "aipi_metrics"."autogen"."device_metrics" 
+WHERE ("device_id" = 'raspberry_pi_001' AND "metric_type" = 'temperature') 
+AND time >= now() - 24h 
+GROUP BY time(30m) FILL(null)
 ```
 
-AI会记住之前的对话内容，因此可以理解上下文相关的指令。
+## 6. 警报系统
 
-### 使用多个设备
+AIPI系统包含警报功能，监控设备状态并在发生异常时通知您。
 
-您可以同时连接多个设备，只需在命令中指定不同的设备ID：
+### 6.1 警报类型
 
-```bash
-# 运行命令助手连接到设备1
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_001
+- **系统警报**：
+  - 高CPU使用率（>80%）
+  - 高内存使用率（>90%）
+  - 高温警报（>75℃）
+  - 磁盘空间不足（<10%）
+  - 设备离线
 
-# 另一个终端窗口中，连接到设备2
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_002
-```
+- **传感器警报**：
+  - 温度超出阈值
+  - 湿度超出阈值
+  - 其他传感器阈值警报
 
-在对话中，AI将知道您正在与哪个设备交互。
+### 6.2 警报配置
 
-### 定时任务
+在Web界面的"警报设置"页面，您可以：
+- 启用/禁用特定警报
+- 配置警报阈值
+- 设置通知方式（邮件、Telegram等）
+- 创建自定义警报规则
 
-您可以使用系统设置定时任务。例如：
+### 6.3 警报通知
 
-**自然语言请求**：
-```
-设置每小时记录一次CPU温度到日志文件
-```
+警报可通过以下方式接收：
+- Web界面提醒
+- 电子邮件
+- Telegram消息
+- 自定义Webhook
 
-**AI可能执行的命令**：
-```bash
-(crontab -l 2>/dev/null; echo "0 * * * * /usr/bin/vcgencmd measure_temp >> /home/pi/temp_log.txt") | crontab -
-```
+## 7. 定时任务
 
-## 安全注意事项
+### 7.1 创建定时任务
 
-使用本系统时，请注意以下安全事项：
+在Web界面的"定时任务"页面：
+1. 点击"新建任务"
+2. 选择设备
+3. 输入命令（JSON格式或自然语言）
+4. 设置执行计划（一次性或重复）
+5. 保存任务
 
-1. **命令限制**: 默认情况下，系统可以执行任何命令。在生产环境中，应考虑限制可执行的命令范围。
+### 7.2 查看和管理任务
 
-2. **加密通信**: 在公共网络上使用时，应配置MQTT服务器使用TLS加密。
+- 查看所有计划任务
+- 启用/禁用特定任务
+- 编辑现有任务
+- 查看任务执行历史和结果
 
-3. **认证**: 始终为MQTT服务器启用用户名/密码认证。
+## 8. 用户权限管理
 
-4. **设备权限**: 避免让命令执行器以root用户运行，创建权限有限的专用用户。
+### 8.1 用户角色
 
-5. **API密钥保护**: 妥善保管OpenAI API密钥，不要将其硬编码在代码中。
+系统支持以下用户角色：
+- **管理员**：完全访问权限
+- **操作员**：可以控制设备和查看数据
+- **查看者**：只能查看数据和状态
 
-## 故障排除
+### 8.2 管理用户
 
-### 设备不响应命令
+管理员可以：
+- 创建新用户
+- 设置用户角色
+- 重置用户密码
+- 禁用用户账户
 
-1. 检查MQTT连接:
-   ```bash
-   mosquitto_sub -h <MQTT服务器地址> -t "device/#" -v
-   ```
+## 9. API集成
 
-2. 验证设备ID是否正确
-   ```bash
-   # 检查设备配置文件
-   cat ai_mqtt_langchain/rpi_executor_config.json
-   ```
+AIPI系统提供REST API，允许与第三方系统集成。
 
-3. 检查设备端日志
-   ```bash
-   sudo journalctl -u rpi-command-executor.service -n 50
-   ```
+### 9.1 认证
 
-### AI无法正确理解请求
-
-1. 尝试使用更具体的语言描述您的需求
-2. 提供更多上下文信息
-3. 使用简单明确的指令
-
-### 命令执行超时
-
-对于长时间运行的命令，可以增加超时设置：
+使用JWT认证：
 
 ```bash
-python ai_mqtt_langchain/send_rpi_command.py --device-id rpi_001 --command "find / -name '*.log'" --timeout 180
+# 获取访问令牌
+curl -X POST http://服务器IP地址:5000/api/auth/login -d '{"email":"admin@aipi.system","password":"admin"}'
+
+# 使用令牌
+curl -X GET http://服务器IP地址:5000/api/devices -H "Authorization: Bearer {your_token}"
 ```
 
-## 扩展系统
+### 9.2 主要API端点
 
-您可以通过以下方式扩展系统功能：
+- `/api/devices`：获取设备列表
+- `/api/devices/{device_id}`：获取特定设备信息
+- `/api/devices/{device_id}/control`：控制设备
+- `/api/data`：查询历史数据
+- `/api/alerts`：获取和管理警报
 
-1. **添加自定义工具**: 修改`langchain_command_agent.py`添加新的LangChain工具
-2. **集成传感器数据**: 修改树莓派代码以收集和报告传感器数据
-3. **创建Web界面**: 开发Web前端替代命令行界面
-4. **添加数据分析功能**: 将系统与数据存储和分析工具集成
+## 10. 故障排除
 
-## 更多资源
+### 10.1 设备离线
 
-- 阅读[项目README](../README.md)获取完整项目概述
-- 查阅[MQTT服务器部署指南](mqtt_server_setup.md)了解通信配置
-- 参考[树莓派安装指南](raspberry_pi_installation.md)获取设备配置详情 
+如果设备显示为离线：
+1. 确认树莓派已通电并运行
+2. 检查网络连接
+3. 验证MQTT服务器配置正确
+4. 查看树莓派客户端日志（`raspberry_pi.log`）
+5. 重启树莓派客户端服务
+
+### 10.2 命令执行失败
+
+如果命令无法执行：
+1. 检查命令格式（JSON语法）
+2. 确认设备支持该命令
+3. 验证命令参数是否正确
+4. 查看服务器日志（`server.log`）
+5. 检查设备端LangChain处理器日志
+
+### 10.3 数据不显示
+
+如果设备数据未显示：
+1. 确认数据收集已启用
+2. 验证InfluxDB连接配置
+3. 检查数据收集间隔设置
+4. 查看数据收集服务日志
+5. 重启服务器数据服务
+
+### 10.4 Web界面问题
+
+如果Web界面无法访问或显示错误：
+1. 确认Web服务正在运行
+2. 检查端口配置（默认5000）
+3. 验证浏览器兼容性（推荐Chrome或Firefox）
+4. 清除浏览器缓存
+5. 检查Web服务器日志
+
+## 11. 最佳实践
+
+### 11.1 系统维护
+
+- 定期备份数据库
+- 更新软件包（`pip install -r requirements.txt --upgrade`）
+- 监控磁盘空间和系统资源
+- 定期重启服务以避免内存泄漏
+
+### 11.2 安全建议
+
+- 更改所有默认密码
+- 启用MQTT认证和加密
+- 使用HTTPS保护Web界面
+- 定期审查用户权限
+- 限制设备控制权限
+
+### 11.3 性能优化
+
+- 调整数据收集间隔
+- 配置InfluxDB数据保留策略
+- 使用数据降采样提高查询性能
+- 增加服务器资源（内存和CPU）以处理更多设备 

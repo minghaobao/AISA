@@ -1,409 +1,374 @@
-# LangChain配置与本地服务启动指南
+# LangChain集成指南
 
-本文档详细说明AI命令执行系统中LangChain的配置方法，以及如何启动完整的本地服务。
+本指南详细说明如何在AIPI系统中设置和配置LangChain组件，用于自然语言处理和命令解析。
 
-## LangChain简介
+## 1. LangChain简介
 
-LangChain是一个强大的框架，用于开发由大型语言模型（LLM）驱动的应用程序。在我们的系统中，LangChain用于：
-1. 将自然语言请求转换为具体的Linux命令
-2. 管理与设备的交互和上下文记忆
-3. 提供工具抽象层，支持命令执行和状态查询
+LangChain是一个强大的框架，用于开发由大型语言模型(LLM)驱动的应用程序。在AIPI系统中，LangChain负责：
 
-## OpenAI API配置
+- 解析自然语言命令
+- 将命令转换为具体的设备控制指令
+- 生成响应并解释执行结果
+- 支持多轮对话和上下文管理
 
-### 获取API密钥
+## 2. 环境准备
 
-首先，您需要获取OpenAI API密钥：
+### 2.1 安装依赖
 
-1. 访问[OpenAI官网](https://openai.com/api/)并创建账户
-2. 导航至API密钥页面
-3. 创建新的API密钥
-4. 保存密钥，我们将在环境配置中使用它
-
-### 环境变量配置
-
-系统通过环境变量管理OpenAI API密钥和其他配置：
-
-1. 复制示例环境文件：
-   ```bash
-   cp ai_mqtt_langchain/.env.example ai_mqtt_langchain/.env
-   ```
-
-2. 编辑`.env`文件，填入您的API密钥和其他参数：
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   OPENAI_MODEL_NAME=gpt-3.5-turbo  # 或 gpt-4，取决于您的需求和访问权限
-   
-   # MQTT配置
-   MQTT_HOST=localhost
-   MQTT_PORT=1883
-   MQTT_USERNAME=mqtt_user  # 如果配置了认证
-   MQTT_PASSWORD=mqtt_password  # 如果配置了认证
-   
-   # 设备配置
-   DEVICE_IDS=rpi_001,rpi_002  # 逗号分隔的设备ID列表
-   ```
-
-## LangChain命令代理配置
-
-### 模型选择
-
-系统默认使用`gpt-3.5-turbo`，但您可以根据需要更改为其他模型：
+LangChain依赖已包含在`requirements.txt`文件中，主要包括：
 
 ```
-OPENAI_MODEL_NAME=gpt-4-turbo-preview  # 更高性能，但成本更高
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-openai>=0.1.0
+openai>=1.0.0
 ```
 
-或者在命令行中指定：
-
+安装依赖：
 ```bash
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_001 --model gpt-4
+pip install -r requirements.txt
 ```
 
-### 温度设置
+### 2.2 API密钥配置
 
-温度控制响应的随机性，默认为0（最确定性）：
+对于OpenAI模型，您需要在`.env`文件中设置API密钥：
+
+```
+# OpenAI API配置
+OPENAI_API_KEY=your_api_key_here
+LLM_MODEL=gpt-3.5-turbo  # 可选: gpt-4, gpt-4-1106-preview
+LLM_TEMPERATURE=0.1
+```
+
+如果您希望使用其他LLM提供商，可以配置相应的API密钥，例如：
+
+```
+# Anthropic API配置
+ANTHROPIC_API_KEY=your_anthropic_key_here
+
+# Hugging Face API配置
+HUGGINGFACE_API_KEY=your_huggingface_key_here
+```
+
+## 3. 系统组件
+
+AIPI系统中的LangChain集成包含以下主要组件：
+
+### 3.1 服务器端LangChain处理器
+
+位置：`server/langchain_processor.py`
+
+功能：
+- 接收来自Web界面的自然语言命令
+- 处理命令并生成设备控制指令
+- 通过MQTT发送指令到相应设备
+- 接收并处理设备响应
+
+### 3.2 树莓派端LangChain处理器
+
+位置：`raspberry_pi/langchain_processor.py`
+
+功能：
+- 接收特定于设备的自然语言命令
+- 在本地处理命令，无需服务器参与
+- 执行GPIO控制、传感器读取等本地任务
+- 返回执行结果
+
+## 4. 配置LangChain
+
+### 4.1 基本配置
+
+在服务器和树莓派上，LangChain处理器配置相似。主要配置包括：
+
+**模型选择**：
+```python
+# 在config.py中
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-3.5-turbo")
+LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.1"))
+```
+
+**对话历史记录**：
+```python
+# 在langchain_processor.py中
+CONVERSATION_HISTORY_LENGTH = int(os.getenv("CONVERSATION_HISTORY_LENGTH", "10"))
+```
+
+### 4.2 工具和函数定义
+
+LangChain处理器使用自定义工具来执行特定任务。以下是一些预定义的工具示例：
+
+**设备控制工具**：
+```python
+@tool
+def control_device(pin: str, action: str, parameters: Optional[Dict] = None) -> str:
+    """控制设备的GPIO引脚。
+    
+    Args:
+        pin: 要控制的引脚名称，例如'relay_1','fan_1'
+        action: 动作，如'on','off','toggle','speed'
+        parameters: 其他参数，如设置风扇速度时的'speed'值
+        
+    Returns:
+        操作结果描述
+    """
+    # 控制逻辑实现
+    ...
+```
+
+**传感器读取工具**：
+```python
+@tool
+def read_sensor(sensor_type: str) -> str:
+    """读取传感器数据。
+    
+    Args:
+        sensor_type: 传感器类型，如'temperature','humidity'
+        
+    Returns:
+        传感器读数
+    """
+    # 读取传感器逻辑实现
+    ...
+```
+
+## 5. 自定义LangChain提示
+
+### 5.1 系统提示模板
+
+AIPI系统使用自定义提示模板来指导LLM的行为。以下是树莓派处理器使用的基本系统提示：
 
 ```python
-# 在langchain_command_agent.py中
-self.llm = ChatOpenAI(
-    openai_api_key=openai_api_key,
-    temperature=0,  # 0-1之间，值越高结果越随机
-    model_name=model_name
-)
-```
+SYSTEM_PROMPT = """你是一个智能家居助手，负责控制树莓派设备。
 
-### 内存配置
+你可以控制的设备包括：
+1. 继电器 (relay_1, relay_2): 可以打开(on)、关闭(off)或切换状态(toggle)
+2. 风扇 (fan_1): 可以打开、关闭，或设置速度(speed)，速度范围0-100
+3. 灯光 (light_1): 可以打开、关闭
 
-对话历史记忆默认使用`ConversationBufferMemory`，可以根据需要修改：
+你可以读取的传感器包括：
+1. 温度传感器 (temperature): 返回当前温度
+2. 湿度传感器 (humidity): 返回当前湿度
+3. 系统状态 (system): 返回CPU、内存使用情况等
 
-```python
-# 默认内存配置
-self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
-# 可选：使用有限历史记忆（仅保留最近k轮对话）
-# from langchain.memory import ConversationBufferWindowMemory
-# self.memory = ConversationBufferWindowMemory(memory_key="chat_history", k=5, return_messages=True)
-```
-
-## 扩展LangChain工具
-
-您可以通过添加新工具来扩展系统功能：
-
-1. 在`langchain_command_agent.py`中的`add_device`方法内添加新工具：
-
-```python
-# 示例：添加一个专用于GPIO控制的工具
-gpio_control_tool = Tool(
-    name=f"control_gpio_on_{device_id}",
-    func=lambda pin_cmd: self.gpio_controller.execute(device_id, pin_cmd),
-    description=f"控制设备 {device_id} 上的GPIO引脚。格式：'引脚号 状态'，例如 '18 HIGH'"
-)
-self.tools.append(gpio_control_tool)
-```
-
-2. 实现相应的功能处理逻辑
-3. 更新代理：`self._create_agent()`
-
-## 本地服务启动流程
-
-完整系统包括多个组件，需要按特定顺序启动：
-
-### 1. 启动MQTT服务器
-
-这是所有通信的基础：
-
-```bash
-# Linux
-sudo systemctl start mosquitto
-
-# Windows
-net start mosquitto
-
-# Docker
-cd mqtt-server
-docker-compose up -d
-```
-
-确认MQTT服务器正常运行：
-
-```bash
-# 测试订阅
-mosquitto_sub -h localhost -t "test/topic" -v
-```
-
-### 2. 启动设备命令执行器
-
-在每个设备（如树莓派）上：
-
-```bash
-# 直接启动
-python ai_mqtt_langchain/rpi_command_executor.py
-
-# 或使用系统服务（如已配置）
-sudo systemctl start rpi-command-executor.service
-```
-
-验证设备已连接：
-
-```bash
-# 订阅设备状态主题
-mosquitto_sub -h localhost -t "device/+/status" -v
-```
-
-几秒钟后，您应该能看到设备发送的心跳消息。
-
-### 3. 启动LangChain命令代理
-
-最后，启动AI命令代理：
-
-```bash
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_001
-```
-
-如果需要支持多设备，可以启动多个实例，每个针对不同设备。
-
-## 完整启动脚本
-
-为了简化启动过程，您可以创建一个启动脚本：
-
-```bash
-#!/bin/bash
-# 文件名: start_system.sh
-
-# 检查MQTT服务器
-echo "检查MQTT服务器..."
-if ! pgrep mosquitto > /dev/null; then
-    echo "启动MQTT服务器..."
-    sudo systemctl start mosquitto
-fi
-
-# 等待MQTT服务器完全启动
-sleep 2
-
-# 启动AI命令代理
-echo "启动AI命令代理..."
-cd /path/to/your/project
-python ai_mqtt_langchain/langchain_command_agent.py --device-id rpi_001
-```
-
-使脚本可执行并运行：
-
-```bash
-chmod +x start_system.sh
-./start_system.sh
-```
-
-## 配置代理行为
-
-### 代理类型
-
-系统使用`CHAT_CONVERSATIONAL_REACT_DESCRIPTION`代理类型，这是一个会话式代理，适合多轮对话：
-
-```python
-self.agent = initialize_agent(
-    tools=self.tools,
-    llm=self.llm,
-    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
-    verbose=True,
-    memory=self.memory,
-    handle_parsing_errors=True,
-    callbacks=self.callbacks
-)
-```
-
-如需更改代理类型，可修改`_create_agent`方法中的`agent`参数。
-
-### 提示模板定制
-
-如需自定义代理的提示模板，可以添加以下代码：
-
-```python
-from langchain.prompts import PromptTemplate
-
-# 定义自定义提示模板
-custom_template = """作为AI命令助手，您的任务是帮助用户与设备 {device_id} 交互。
-分析用户的自然语言请求，并将其转换为适当的Linux命令。
-您可以使用以下工具：
-{tools}
-
-历史对话：
-{chat_history}
-
-用户请求：{input}
+请使用提供的工具执行用户请求，并返回操作结果。
 """
-
-# 创建提示模板
-prompt = PromptTemplate(
-    input_variables=["device_id", "tools", "chat_history", "input"],
-    template=custom_template
-)
-
-# 在初始化代理时使用
-self.agent = initialize_agent(
-    # ...其他参数...
-    agent_kwargs={"prompt": prompt}
-)
 ```
 
-## 多设备并行管理
+### 5.2 自定义提示
 
-如果您需要同时管理多个设备，可以使用以下方法：
-
-### 1. 配置多设备
-
-在`.env`文件中列出所有设备：
-
-```
-DEVICE_IDS=rpi_001,rpi_002,rpi_003
-```
-
-### 2. 批量启动设备监控
-
-创建一个脚本自动为所有设备启动代理：
+您可以修改`langchain_processor.py`中的提示，以添加或更改可用的命令和描述：
 
 ```python
-# 文件名: start_all_agents.py
-import os
-import subprocess
-from dotenv import load_dotenv
+# 在config.py或.env中定义自定义提示
+DEVICE_TYPE = os.getenv("DEVICE_TYPE", "智能家居控制设备")
+DEVICE_CAPABILITIES = os.getenv("DEVICE_CAPABILITIES", """
+- 控制继电器(relay_1-relay_4)
+- 调节风扇速度(fan_1-fan_2)
+- 控制LED灯(led_1-led_3)
+- 读取温湿度传感器
+- 监控系统状态
+""")
 
-# 加载环境变量
-load_dotenv()
+# 在langchain_processor.py中使用这些变量
+SYSTEM_PROMPT = f"""你是一个{DEVICE_TYPE}的智能助手。
 
-# 获取设备列表
-devices = os.getenv("DEVICE_IDS", "").split(",")
+你可以执行以下操作：
+{DEVICE_CAPABILITIES}
 
-# 为每个设备启动一个代理进程
-processes = []
-for device in devices:
-    if device.strip():
-        cmd = ["python", "ai_mqtt_langchain/langchain_command_agent.py", "--device-id", device.strip()]
-        process = subprocess.Popen(cmd)
-        processes.append((device, process))
-        print(f"已为设备 {device} 启动代理，PID: {process.pid}")
-
-# 等待所有进程完成
-try:
-    for device, process in processes:
-        process.wait()
-except KeyboardInterrupt:
-    print("正在停止所有代理...")
-    for device, process in processes:
-        process.terminate()
+请使用提供的工具执行用户请求，并返回操作结果。
+"""
 ```
 
-运行此脚本：
+## 6. 扩展LangChain功能
+
+### 6.1 添加新工具
+
+要添加新的设备控制能力，您需要：
+
+1. 在`langchain_processor.py`中定义新的工具函数：
+
+```python
+@tool
+def control_new_device(device_id: str, action: str) -> str:
+    """控制新添加的设备。
+    
+    Args:
+        device_id: 设备标识符
+        action: 要执行的动作
+        
+    Returns:
+        操作结果
+    """
+    # 实现控制逻辑
+    ...
+    return f"成功控制{device_id}执行{action}操作"
+```
+
+2. 更新系统提示以包含新设备：
+
+```python
+SYSTEM_PROMPT = """你是一个智能家居助手，负责控制树莓派设备。
+
+你可以控制的设备包括：
+...
+4. 新设备 (new_device): 可以执行特定操作
+
+请使用提供的工具执行用户请求。
+"""
+```
+
+### 6.2 实现自定义Agent
+
+对于更复杂的场景，您可以实现自定义Agent：
+
+```python
+from langchain.agents import initialize_agent, AgentType
+
+# 创建自定义Agent
+def create_custom_agent(llm, tools):
+    agent = initialize_agent(
+        tools, 
+        llm, 
+        agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+        verbose=True,
+        handle_parsing_errors=True,
+        max_iterations=5
+    )
+    return agent
+```
+
+## 7. 多语言支持
+
+AIPI系统支持多语言自然语言处理。要启用不同语言的支持：
+
+1. 在系统提示中指定语言偏好：
+
+```python
+SYSTEM_PROMPT = """你是一个智能家居助手，负责控制树莓派设备。
+用户可能用中文或英文与你交流，请使用用户使用的语言回复。
+
+你可以控制的设备包括：
+...
+"""
+```
+
+2. 确保您使用的LLM模型支持目标语言（如GPT-3.5/4已支持多种语言）
+
+## 8. 测试与调试
+
+### 8.1 测试LangChain处理器
+
+您可以使用以下命令测试LangChain处理器：
 
 ```bash
-python start_all_agents.py
+# 在服务器端
+cd AIPI/server
+python test_langchain.py --query "打开客厅的灯"
+
+# 在树莓派端
+cd AIPI/raspberry_pi
+python test_langchain.py --query "打开继电器1"
 ```
 
-## 故障排除
+### 8.2 调试提示
 
-### LangChain API错误
+如果LangChain处理器无法正确理解命令，您可以：
 
-**问题**: `AuthenticationError: Incorrect API key provided`
-
-**解决方案**:
-1. 检查`.env`文件中的API密钥是否正确
-2. 确认环境变量已正确加载：
-   ```python
-   import os
-   print(os.getenv("OPENAI_API_KEY"))
-   ```
-
-### 响应超时
-
-**问题**: 代理响应非常慢或超时
-
-**解决方案**:
-1. 检查网络连接
-2. 考虑使用更轻量级的模型
-3. 增加超时设置：
-   ```python
-   self.llm = ChatOpenAI(
-       # ...其他参数...
-       request_timeout=60  # 秒
-   )
-   ```
-
-### 内存使用过高
-
-**问题**: 长时间运行后内存占用过高
-
-**解决方案**:
-1. 使用WindowMemory限制历史记忆量
-2. 定期重启服务
-3. 优化提示模板，减少不必要的内容
-
-## 高级LangChain配置
-
-### 使用自定义回调
-
-系统已实现`CommandAgentCallbacks`类用于跟踪代理行为。您可以扩展它记录更多信息：
-
+1. 启用详细日志：
 ```python
-class CustomCallbacks(CommandAgentCallbacks):
-    def on_llm_start(self, serialized, prompts, **kwargs):
-        super().on_llm_start(serialized, prompts, **kwargs)
-        # 记录完整提示到文件
-        with open("prompts_log.txt", "a") as f:
-            f.write(f"--- 新提示 {datetime.now().isoformat()} ---\n")
-            for prompt in prompts:
-                f.write(f"{prompt}\n")
-            f.write("---\n")
+import langchain
+langchain.verbose = True
 ```
 
-### 集成向量数据库
+2. 查看完整的提示和响应：
+```python
+# 在langchain_processor.py中
+print(f"System Prompt: {SYSTEM_PROMPT}")
+print(f"User Query: {query}")
+print(f"LLM Response: {response}")
+```
 
-如需增加系统对命令的理解，可以集成向量数据库：
+3. 调整提示模板和示例以提高理解能力
+
+## 9. 高级功能
+
+### 9.1 记忆功能
+
+LangChain处理器支持对话记忆，使其能够记住上下文：
 
 ```python
-from langchain.vectorstores import Chroma
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.docstore.document import Document
+from langchain.memory import ConversationBufferWindowMemory
 
-# 创建命令知识库
-docs = [
-    Document(page_content="ls - 列出目录内容", metadata={"category": "file"}),
-    Document(page_content="ps - 报告当前进程状态", metadata={"category": "process"}),
-    # 更多命令...
+# 创建对话记忆
+memory = ConversationBufferWindowMemory(
+    k=CONVERSATION_HISTORY_LENGTH,
+    return_messages=True,
+    memory_key="chat_history",
+    output_key="output"
+)
+```
+
+### 9.2 结构化输出
+
+要确保LLM生成结构化响应，可以使用OutputParser：
+
+```python
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+
+# 定义响应结构
+response_schemas = [
+    ResponseSchema(name="action", description="执行的操作"),
+    ResponseSchema(name="status", description="操作的状态，成功或失败"),
+    ResponseSchema(name="message", description="操作结果的详细描述")
 ]
 
-# 创建向量数据库
-embeddings = OpenAIEmbeddings()
-vectordb = Chroma.from_documents(docs, embeddings)
-
-# 创建检索工具
-retriever = vectordb.as_retriever()
-command_lookup_tool = Tool(
-    name="command_lookup",
-    func=lambda q: retriever.get_relevant_documents(q),
-    description="查找Linux命令的用法和示例"
-)
+# 创建输出解析器
+output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 ```
 
-## 完整服务架构图
+### 9.3 异步处理
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │
-│  LangChain代理  │◄────►   MQTT服务器    │◄────►  设备命令执行器  │
-│                 │     │                 │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-       ▲                                               │
-       │                                               │
-       │                                               ▼
-┌─────────────────┐                           ┌─────────────────┐
-│                 │                           │                 │
-│  用户交互界面   │                           │  设备系统命令   │
-│                 │                           │                 │
-└─────────────────┘                           └─────────────────┘
+对于高负载场景，可以使用异步处理：
+
+```python
+import asyncio
+from langchain.llms import OpenAI
+
+async def process_command_async(query, device_id):
+    # 异步处理逻辑
+    ...
+    return response
 ```
 
-## 进一步阅读
+## 10. 故障排除
+
+### 10.1 LLM模型错误
+
+如果遇到LLM API错误：
+- 检查API密钥是否正确
+- 验证网络连接
+- 查看API限流和配额状态
+- 尝试使用不同的模型
+
+### 10.2 解析错误
+
+如果LangChain无法正确解析命令：
+- 检查提示模板是否清晰
+- 增加示例数量
+- 降低温度设置以减少随机性
+- 使用更高级的模型（如gpt-4）
+
+### 10.3 工具执行错误
+
+如果工具执行失败：
+- 检查工具函数是否有错误
+- 验证参数类型和范围
+- 查看设备控制器日志
+- 确保GPIO权限正确
+
+## 11. 参考资源
 
 - [LangChain官方文档](https://python.langchain.com/docs/get_started/introduction)
 - [OpenAI API文档](https://platform.openai.com/docs/api-reference)
-- [Mosquitto MQTT文档](https://mosquitto.org/documentation/) 
+- [树莓派GPIO编程指南](https://www.raspberrypi.org/documentation/usage/gpio/)
+- [MQTT消息格式文档](mqtt_server_setup.md) 

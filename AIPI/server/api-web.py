@@ -23,7 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger("web_control")
 
 # 创建Flask应用
-app = Flask(__name__, static_folder='../nextjs_frontend/out', static_url_path='')
+app = Flask(__name__, static_folder='./nextjs_frontend/out', static_url_path='')
 CORS(app)
 
 # 配置SocketIO
@@ -336,6 +336,22 @@ def get_monitor_data():
     return jsonify({
         "devices": get_all_device_status(),
         "timestamp": time.time()
+    })
+
+# API路由：状态检查
+@app.route('/api/status', methods=['GET'])
+def api_status():
+    """
+    返回API状态信息
+    :return: API状态信息
+    """
+    return jsonify({
+        "status": "online",
+        "timestamp": time.time(),
+        "server_info": {
+            "version": "1.0.0",
+            "name": "AIPI服务器"
+        }
     })
 
 # 获取所有设备状态

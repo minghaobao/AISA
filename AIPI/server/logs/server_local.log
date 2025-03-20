@@ -1,0 +1,253 @@
+2025-03-20 23:16:07,528 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:18:23,482 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:18:24,352 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:18:24,359 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:18:24,359 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:18:24,372 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:18:26,425 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:18:26,425 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:18:26,426 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:18:26,426 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:18:26,426 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:18:26,426 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:18:26,426 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:18:26,427 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:18:27,365 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:18:28,328 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:18:28,336 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:18:28,336 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:18:28,344 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:18:28,348 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:18:28,601 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:18:30,379 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:18:30,379 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:18:30,379 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:18:30,380 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:18:30,380 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:18:30,380 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:18:30,380 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:18:30,380 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:18:34,764 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:18:34] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:18:44,758 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:18:44] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:18:54,759 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:18:54] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:04,768 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:04] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:14,764 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:14] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:24,765 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:24] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:31,699 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:19:32,603 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:19:32,611 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:19:32,612 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:19:32,625 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:19:34,640 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:19:34,641 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:19:34,641 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:19:34,641 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:19:34,641 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:19:34,641 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:19:34,642 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:19:34,642 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:19:34,769 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:34] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:35,704 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:19:36,587 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:19:36,595 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:19:36,595 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:19:36,603 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:19:36,607 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:19:36,829 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:19:38,625 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:19:38,625 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:19:38,626 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:19:38,626 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:19:38,626 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:19:38,626 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:19:38,626 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:19:38,626 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:19:44,759 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:44] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:19:54,756 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:19:54] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:04,760 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:04] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:14,759 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:14] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:24,757 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:24] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:34,754 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:34] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:44,766 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:44] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:20:54,754 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:20:54] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:04,768 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:04] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:14,758 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:14] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:24,757 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:24] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:34,760 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:34] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:44,769 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:44] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:21:54,757 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:21:54] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:04,766 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:04] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:14,755 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:14] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:24,765 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:24] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:34,844 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:34] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:44,756 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:44] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-03-20 23:22:45,527 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:45] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:22:48,444 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:22:48] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:28:47,728 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:28:48,611 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:28:48,618 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:28:48,619 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:28:48,631 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:28:50,664 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:28:50,664 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:28:50,665 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:28:50,665 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:28:50,665 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:28:50,665 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:28:50,665 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:28:50,665 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:28:51,331 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:28:52,187 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:28:52,195 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:28:52,195 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:28:52,203 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:28:52,207 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:28:52,440 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:28:54,227 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:28:54,227 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:28:54,227 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:28:54,228 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:28:54,228 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:28:54,228 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:28:54,228 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:28:54,228 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:33:46,376 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:33:47,229 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:33:47,236 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:33:47,236 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:33:47,249 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:33:49,265 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:33:49,265 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:33:49,266 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:33:49,266 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:33:49,266 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:33:49,266 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:33:49,266 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:33:49,266 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:33:49,809 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:33:50,621 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:33:50,629 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:33:50,629 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:33:50,636 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:33:50,643 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:33:50,863 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:33:52,662 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:33:52,662 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:33:52,662 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:33:52,662 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:33:52,663 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:33:52,663 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:33:52,663 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:33:52,663 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:35:18,163 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:35:18] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:36:27,275 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:36:27] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:38:51,949 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:38:52,764 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:38:52,771 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:38:52,772 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:38:52,785 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:38:54,808 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:38:54,808 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:38:54,809 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:38:54,809 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:38:54,809 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:38:54,809 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:38:54,809 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:38:54,809 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:38:55,382 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:38:56,200 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:38:56,207 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:38:56,208 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:38:56,215 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:38:56,219 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:38:56,442 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:38:58,241 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:38:58,242 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:38:58,242 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:38:58,242 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:38:58,242 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:38:58,243 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:38:58,243 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:38:58,243 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:41:16,974 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:41:17,793 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:41:17,800 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:41:17,800 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:41:17,814 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:41:19,827 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:41:19,827 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:41:19,827 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:41:19,828 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:41:19,828 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:41:19,828 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:41:19,828 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:41:19,828 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:41:20,377 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:41:21,197 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:41:21,204 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:41:21,205 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:41:21,212 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:41:21,216 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:41:21,437 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:41:23,230 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:41:23,230 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:41:23,230 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:41:23,230 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:41:23,231 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:41:23,231 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:41:23,231 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:41:23,231 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:41:26,724 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:41:26] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:41:29,989 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:41:29] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:41:39,614 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:41:39] "[33mGET /api/status HTTP/1.1[0m" 404 -
+2025-03-20 23:43:25,119 - werkzeug - INFO -  * Detected change in 'H:\\aisa\\aipi\\server\\simply-web.py', reloading
+2025-03-20 23:43:25,459 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:43:28,106 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:43:28,930 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:43:28,938 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:43:28,939 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:43:28,946 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:43:28,950 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:43:29,172 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:43:30,974 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:43:30,974 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:43:30,974 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:43:30,975 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:43:30,975 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:43:30,975 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:43:30,975 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:43:30,975 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:43:37,739 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:43:38,567 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:43:38,575 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:43:38,576 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:43:38,587 - werkzeug - INFO -  * Restarting with stat
+2025-03-20 23:43:40,615 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:43:40,615 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:43:40,616 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:43:40,616 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:43:40,616 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:43:40,616 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:43:40,616 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:43:40,616 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:43:41,208 - influx_writer - INFO - InfluxDB\u5ba2\u6237\u7aef\u521d\u59cb\u5316\u6210\u529f
+2025-03-20 23:43:42,070 - engineio.server - INFO - Server initialized for threading.
+2025-03-20 23:43:42,078 - web_control - INFO - \u542f\u52a8Web\u670d\u52a1\u5668: localhost:5000
+2025-03-20 23:43:42,078 - werkzeug - WARNING - WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+2025-03-20 23:43:42,086 - werkzeug - WARNING -  * Debugger is active!
+2025-03-20 23:43:42,090 - werkzeug - INFO -  * Debugger PIN: 313-892-676
+2025-03-20 23:43:42,309 - werkzeug - INFO -  * Running on http://localhost:5000/ (Press CTRL+C to quit)
+2025-03-20 23:43:44,114 - mqtt_client - INFO - MQTT\u5ba2\u6237\u7aef\u542f\u52a8\u6210\u529f
+2025-03-20 23:43:44,114 - mqtt_client - INFO - \u5df2\u8fde\u63a5\u5230MQTT\u4ee3\u7406\u670d\u52a1\u5668
+2025-03-20 23:43:44,115 - web_control - INFO - MQTT\u6d88\u606f\u5904\u7406\u5668\u5df2\u542f\u52a8
+2025-03-20 23:43:44,115 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/data
+2025-03-20 23:43:44,115 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/status
+2025-03-20 23:43:44,115 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/+/result
+2025-03-20 23:43:44,115 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: langchain/process/+
+2025-03-20 23:43:44,115 - mqtt_client - INFO - \u5df2\u8ba2\u9605\u4e3b\u9898: device/control/#
+2025-03-20 23:44:00,270 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:44:00] "GET /api/status HTTP/1.1" 200 -
+2025-03-20 23:44:09,281 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:44:09] "[33mGET / HTTP/1.1[0m" 404 -
+2025-03-20 23:45:19,403 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:45:19] "[33mGET /api/device HTTP/1.1[0m" 404 -
+2025-03-20 23:45:33,341 - werkzeug - INFO - 127.0.0.1 - - [20/Mar/2025 23:45:33] "[31m[1mGET /api/devices HTTP/1.1[0m" 401 -
+2025-03-20 23:55:07,523 - werkzeug - INFO -  * Detected change in 'H:\\AISA\\AIPI\\server\\run.py', reloading
+2025-03-20 23:55:07,847 - werkzeug - INFO -  * Restarting with stat

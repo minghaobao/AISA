@@ -50,7 +50,28 @@ def start_web_server(background=True):
         # 在主线程运行Web服务器
         logger.info("Web服务器在主线程启动")
         web_start()
-        return None
+
+def start_api_server(background=True):
+    """
+    启动API服务器
+    :param background: 是否在后台运行
+    """
+    import subprocess
+    import sys
+    
+    logger.info("正在启动API服务器...")
+    
+    if background:
+        # 创建一个子进程运行API服务器
+        api_process = subprocess.Popen([sys.executable, "api-web.py"], 
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+        logger.info("API服务器在后台启动，PID: %s", api_process.pid)
+        return api_process
+    else:
+        # 在主线程运行API服务器
+        logger.info("API服务器在主线程启动")
+        os.system(f"{sys.executable} api-web.py")
 
 def start_alert_checker(background=True):
     """
@@ -101,6 +122,9 @@ def run_all_services():
         # 启动Web服务器（后台）
         web_thread = start_web_server(background=True)
         
+        # 启动API服务器（后台）
+        api_process = start_api_server(background=True)
+        
         # 启动告警检查（后台）
         alert_thread = start_alert_checker(background=True)
         
@@ -116,6 +140,12 @@ def run_all_services():
         # 清理资源
         cleanup()
         
+        # 终止API进程
+        if api_process:
+            logger.info("正在终止API服务器进程...")
+            api_process.terminate()
+            api_process.wait()
+            
         # 断开MQTT连接
         if mqtt_client:
             mqtt_client.disconnect()
@@ -130,6 +160,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI MQTT LangChain平台启动器")
     parser.add_argument("--mqtt", action="store_true", help="只启动MQTT客户端")
     parser.add_argument("--web", action="store_true", help="只启动Web服务器")
+    parser.add_argument("--api", action="store_true", help="只启动API服务器")
     parser.add_argument("--alert", action="store_true", help="只启动告警检查服务")
     parser.add_argument("--all", action="store_true", help="启动所有服务")
     
@@ -139,37 +170,37 @@ if __name__ == "__main__":
         if args.mqtt:
             # 只启动MQTT客户端
             mqtt_client = start_mqtt_client()
-            
+            if not mqtt_client:
+                logger.error("无法启动MQTT客户端，程序退出")
+                sys.exit(1)
+                
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                logger.info("接收到退出信号")
+                
             if mqtt_client:
-                logger.info("MQTT客户端已启动，按Ctrl+C退出")
-                try:
-                    while True:
-                        time.sleep(1)
-                except KeyboardInterrupt:
-                    mqtt_client.disconnect()
-                    logger.info("MQTT客户端已停止")
-                    
+                mqtt_client.disconnect()
+                
         elif args.web:
             # 只启动Web服务器
             start_web_server(background=False)
+            
+        elif args.api:
+            # 只启动API服务器
+            start_api_server(background=False)
             
         elif args.alert:
             # 只启动告警检查服务
             start_alert_checker(background=False)
             
-        elif args.all or not (args.mqtt or args.web or args.alert):
-            # 启动所有服务
-            success = run_all_services()
-            sys.exit(0 if success else 1)
-            
         else:
-            parser.print_help()
+            # 默认启动所有服务
+            run_all_services()
             
-    except KeyboardInterrupt:
-        logger.info("程序已被用户中断")
-        
     except Exception as e:
-        logger.error(f"程序运行时出错: {str(e)}")
+        logger.error(f"启动服务时出错: {str(e)}")
         sys.exit(1)
         
     finally:

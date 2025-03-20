@@ -1,261 +1,244 @@
-# AI智能监控平台
+# AIPI 系统文档
 
-基于MQTT、LangChain和InfluxDB的智能设备监控与控制平台。
+## 1. 系统概述
 
-## 功能特点
+AIPI（AI-Powered IoT Platform）是一个基于人工智能的物联网控制系统，通过自然语言处理和MQTT通信，实现对树莓派设备的智能监控和控制。系统由服务器端和树莓派端两部分组成，支持多设备管理、数据存储分析、告警监控等功能。
 
-- 实时设备数据采集与监控
-- 智能告警管理
-- 设备远程控制
-- 数据可视化
-- 语音交互
-- 多设备支持
+### 1.1 系统架构
 
-## 系统架构
+系统分为两个主要部分：
 
-- MQTT: 设备通信
-- InfluxDB: 时序数据存储
-- Grafana: 数据可视化
-- LangChain: AI智能控制
-- Flask: Web后端
-- Next.js: Web前端
+- **服务器端**：中央控制系统，负责数据处理、Web界面、LangChain自然语言处理和数据存储
+- **树莓派端**：部署在各个树莓派设备上的客户端，负责硬件控制、数据采集和命令执行
 
-## 快速开始
+通信基于MQTT协议，数据存储使用InfluxDB，数据可视化使用Grafana。
 
-### 环境要求
+### 1.2 核心功能
 
-- Python 3.10+
-- Node.js 16+
-- Docker & Docker Compose
-- MQTT Broker
-- InfluxDB 2.x
-- Grafana 9.x
+- 设备数据收集与监控（CPU、内存、温度等系统参数）
+- 基于LangChain的自然语言命令处理
+- GPIO设备控制（继电器、风扇、灯光等）
+- 告警监控与通知（邮件、Telegram）
+- 数据存储与分析（InfluxDB + Grafana）
+- Web管理界面
 
-### 安装步骤
+## 2. 安装指南
 
-1. 克隆代码库:
+### 2.1 服务器端安装
+
+#### 环境要求
+- Python 3.8+
+- MQTT代理（如Mosquitto）
+- InfluxDB 2.0+
+- Grafana（可选，用于数据可视化）
+
+#### 安装步骤
+
+1. 克隆代码库：
 ```bash
-git clone https://github.com/yourusername/ai-mqtt-langchain.git
-cd ai-mqtt-langchain
+git clone https://github.com/yourusername/AIPI.git
+cd AIPI/server
 ```
 
-2. 安装Python依赖:
+2. 安装依赖：
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 配置环境变量:
+3. 复制并修改配置文件：
 ```bash
 cp .env.example .env
-# 编辑.env文件,填入必要的配置信息
+# 编辑.env文件，设置必要的配置参数
 ```
 
-4. 启动服务:
+4. 创建本地配置文件（可选，包含敏感信息）：
 ```bash
-# 使用Docker Compose启动所有服务
-docker-compose up -d
-
-# 或手动启动各个服务
-python run.py --mqtt
-python run.py --web
-python run.py --alert
+cp .env.example .env.local
+# 编辑.env.local，添加API密钥等敏感信息
 ```
 
-### 访问服务
-
-- Web界面: http://localhost:3000
-- Grafana: http://localhost:3001
-- InfluxDB: http://localhost:8086
-
-## 项目结构
-
-```
-ai-mqtt-langchain/
-├── ai_mqtt_langchain/        # Python后端
-│   ├── __init__.py
-│   ├── config.py            # 配置文件
-│   ├── mqtt_client.py       # MQTT客户端
-│   ├── device_control.py    # 设备控制
-│   ├── alert_check.py       # 告警检查
-│   ├── web_control.py       # Web控制
-│   └── run.py              # 主程序
-├── nextjs_frontend/         # Next.js前端
-├── docker/                  # Docker配置
-├── grafana/                 # Grafana配置
-├── tests/                   # 测试用例
-├── .env                     # 环境变量
-├── requirements.txt         # Python依赖
-├── docker-compose.yml       # Docker编排
-└── README.md               # 项目说明
+5. 启动服务器：
+```bash
+python run.py
 ```
 
-## 配置说明
+### 2.2 树莓派端安装
 
-### MQTT配置
+#### 环境要求
+- 树莓派OS
+- Python 3.8+
+- 适当连接的GPIO设备（继电器、传感器等）
 
-```python
-MQTT_CONFIG = {
-    "host": "localhost",
-    "port": 1883,
-    "username": "your_username",
-    "password": "your_password",
-    "topics": {
-        "data": "devices/+/data",
-        "control": "devices/+/control",
-        "status": "devices/+/status"
-    }
-}
+#### 安装步骤
+
+1. 克隆代码库：
+```bash
+git clone https://github.com/yourusername/AIPI.git
+cd AIPI/raspberry_pi
 ```
 
-### 设备配置
-
-```python
-DEVICE_CONFIG = {
-    "relay": {
-        "pin": 17,
-        "initial_state": "off"
-    },
-    "fan": {
-        "pin": 18,
-        "initial_state": "off"
-    }
-}
+2. 安装依赖：
+```bash
+pip install -r requirements.txt
 ```
 
-### 告警配置
-
-```python
-ALERT_CONFIG = {
-    "cooldown": 300,  # 告警冷却时间(秒)
-    "check_interval": 60,  # 检查间隔(秒)
-    "rules": {
-        "temperature": {
-            "warning": 25,
-            "critical": 30
-        },
-        "humidity": {
-            "warning": 70,
-            "critical": 80
-        }
-    }
-}
+3. 复制并修改配置文件：
+```bash
+cp .env.example .env
+# 编辑.env文件，设置必要的配置参数
 ```
 
-## 开发指南
+4. 创建本地设备配置：
+```bash
+cp .env.example .env.local
+# 编辑.env.local，根据硬件配置设置GPIO引脚等
+```
 
-### 添加新设备
+5. 启动树莓派客户端：
+```bash
+python rpi_run.py
+```
 
-1. 在`device_control.py`中添加设备类
-2. 在`config.py`中添加设备配置
-3. 在`web_control.py`中添加控制接口
+### 2.3 Web界面安装
 
-### 添加新告警规则
-
-1. 在`alert_check.py`中添加规则检查函数
-2. 在`config.py`中添加规则配置
-3. 在`web_control.py`中添加告警接口
-
-### 添加新可视化面板
-
-1. 在Grafana中创建新面板
-2. 导出面板配置到`grafana_dashboard.json`
-3. 更新`docker-compose.yml`中的Grafana配置
-
-## 测试
+Web界面已包含在服务器端，不需要单独安装。若要单独运行Web界面：
 
 ```bash
-# 运行所有测试
-pytest
-
-# 运行特定测试
-pytest tests/test_device_control.py
-
-# 生成测试覆盖率报告
-pytest --cov=ai_mqtt_langchain
+cd AIPI/server/web
+python start_web.py
 ```
 
-## 部署
+详细安装说明，请参阅：
+- [服务器安装详细指南](docs/server_installation.md)
+- [树莓派安装详细指南](docs/raspberry_pi_installation.md)
+- [MQTT服务器设置](docs/mqtt_server_setup.md)
 
-### Docker部署
+## 3. 使用指南
 
+### 3.1 服务器管理
+
+#### 启动服务
 ```bash
-# 构建镜像
-docker-compose build
+# 完整启动服务器（MQTT、Web、LangChain、告警等）
+python run.py
 
-# 启动服务
-docker-compose up -d
-
-# 查看日志
-docker-compose logs -f
+# 单独启动Web服务
+python web/start_web.py
 ```
 
-### 手动部署
+#### 监控与管理
+- 访问Web界面：`http://<服务器IP>:5000`
+- 查看数据可视化：`http://<服务器IP>:3000`（Grafana）
+- 检查日志：`logs/server.log`和`logs/alerts.log`
 
-1. 安装依赖
-2. 配置环境变量
-3. 启动各个服务
-4. 配置反向代理(可选)
+### 3.2 树莓派设备控制
 
-## 监控与维护
-
-### 日志
-
-- 应用日志: `logs/app.log`
-- 告警日志: `logs/alert.log`
-- MQTT日志: `logs/mqtt.log`
-
-### 备份
-
+#### 启动设备客户端
 ```bash
-# 运行备份脚本
-./backup.sh
+# 启动所有服务
+python rpi_run.py
+
+# 只启动MQTT客户端
+python rpi_run.py --mqtt
+
+# 只启动设备控制器
+python rpi_run.py --device
+
+# 只启动LangChain处理器
+python rpi_run.py --processor
 ```
 
-### 监控指标
+#### 自然语言命令示例
 
-- CPU使用率
-- 内存使用率
-- 磁盘使用率
-- MQTT连接状态
-- 设备在线状态
+通过Web界面或MQTT发送自然语言命令：
 
-## 贡献指南
+- "打开客厅的灯"
+- "将风扇速度调到50%"
+- "监控服务器CPU温度，如果超过70度发送警报"
+- "每天晚上10点关闭所有设备"
 
-1. Fork项目
-2. 创建特性分支
-3. 提交更改
-4. 推送到分支
-5. 创建Pull Request
+详细使用说明，请参阅：
+- [使用指南](docs/usage_guide.md)
+- [LangChain设置与使用](docs/langchain_setup.md)
 
-## 许可证
+## 4. 项目结构
 
-MIT License
-
-## 联系方式
-
-- 项目主页: https://github.com/yourusername/ai-mqtt-langchain
-- 问题反馈: https://github.com/yourusername/ai-mqtt-langchain/issues
-- 邮件联系: your.email@example.com
-
-### Web界面
-
-项目现在包含一个基于Flask的Web界面，用于通过自然语言输入来控制树莓派：
-
-- 位于 `web/` 目录下
-- 提供直观的用户界面来发送命令和查看结果
-- 实时显示设备连接状态
-- 支持所有现代浏览器
-
-启动Web界面：
-```bash
-# Windows
-cd ai_mqtt_langchain/web
-start_web.bat
-
-# Linux/macOS
-cd ai_mqtt_langchain/web
-chmod +x start_web.sh
-./start_web.sh
+```
+AIPI/
+├── server/                # 服务器端
+│   ├── web/               # Web界面
+│   │   ├── routes/        # Web路由
+│   │   ├── templates/     # HTML模板
+│   │   ├── __init__.py    # Web初始化
+│   │   └── start_web.py   # Web启动脚本
+│   ├── config.py          # 服务器配置
+│   ├── mqtt_client.py     # MQTT客户端
+│   ├── langchain_processor.py # LangChain处理器
+│   ├── influx_writer.py   # InfluxDB写入
+│   ├── alert_manager.py   # 告警管理
+│   └── run.py             # 服务器启动脚本
+│
+├── raspberry_pi/          # 树莓派端
+│   ├── config.py          # 树莓派配置
+│   ├── mqtt_client.py     # MQTT客户端
+│   ├── command_executor.py # 命令执行器
+│   ├── device_controller.py # 设备控制
+│   ├── langchain_processor.py # LangChain处理器
+│   └── rpi_run.py         # 树莓派启动脚本
+│
+└── docs/                  # 文档
+    ├── server_installation.md   # 服务器安装指南
+    ├── raspberry_pi_installation.md  # 树莓派安装指南
+    ├── mqtt_server_setup.md    # MQTT服务器设置
+    ├── usage_guide.md          # 使用指南
+    └── langchain_setup.md      # LangChain设置
 ```
 
-在浏览器中访问 `http://localhost:5000` 使用Web界面。 
+## 5. 故障排除
+
+### 常见问题
+
+1. **MQTT连接失败**
+   - 检查MQTT代理是否运行
+   - 验证MQTT用户名和密码
+   - 确认防火墙未阻止MQTT端口
+
+2. **OpenAI API错误**
+   - 验证API密钥是否有效
+   - 检查API请求限制
+   - 查看OpenAI服务状态
+
+3. **树莓派GPIO错误**
+   - 确认GPIO引脚配置正确
+   - 检查硬件连接
+   - 验证运行权限（可能需要sudo）
+
+4. **InfluxDB连接问题**
+   - 确认InfluxDB服务运行
+   - 验证令牌和组织配置
+   - 检查存储桶是否存在
+
+### 日志文件
+- 服务器日志：`logs/server.log`
+- 告警日志：`logs/alerts.log`
+- 树莓派日志：`raspberry_pi.log`
+
+## 6. 贡献指南
+
+欢迎贡献代码、报告问题或提出改进建议。请遵循以下步骤：
+
+1. Fork本仓库
+2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交您的更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 打开一个Pull Request
+
+## 7. 许可证
+
+本项目采用MIT许可证 - 详见 [LICENSE](LICENSE) 文件
+
+## 8. 联系方式
+
+项目维护者 - [@yourname](https://github.com/yourname) - email@example.com
+
+项目链接：[https://github.com/yourusername/AIPI](https://github.com/yourusername/AIPI) 
