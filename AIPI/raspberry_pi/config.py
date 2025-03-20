@@ -3,13 +3,14 @@ import logging
 from dotenv import load_dotenv
 
 # 加载环境变量
-load_dotenv()
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(env_path)
 
 # 日志配置
 LOG_CONFIG = {
     "level": getattr(logging, os.getenv("LOG_LEVEL", "INFO")),
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    "filename": os.getenv("LOG_FILE")  # 如果不设置，则输出到控制台
+    "filename": os.getenv("LOG_FILE", "raspberry_pi.log")  # 默认日志文件
 }
 
 # MQTT配置
@@ -20,13 +21,13 @@ MQTT_CONFIG = {
     "password": os.getenv("MQTT_PASSWORD", ""),
     "keep_alive": int(os.getenv("MQTT_KEEP_ALIVE", "60")),
     "subscribe_topics": [
-        "device/+/data",       # 设备数据主题，+是通配符
-        "device/control/#"      # 设备控制主题，#是多级通配符
+        f"device/{os.getenv('DEVICE_ID', 'raspberry_pi')}/command",  # 命令主题
+        "device/control/#"                                           # 控制主题
     ],
     "publish_topics": {
-        "device_control": "device/control",
-        "device_status": "device/status",
-        "alert": "alert"
+        "device_data": f"device/{os.getenv('DEVICE_ID', 'raspberry_pi')}/data",
+        "device_status": f"device/{os.getenv('DEVICE_ID', 'raspberry_pi')}/status",
+        "command_result": f"device/{os.getenv('DEVICE_ID', 'raspberry_pi')}/result"
     }
 }
 
@@ -76,13 +77,13 @@ DEVICE_CONFIG = {
     # 继电器设备
     "relay_1": {
         "type": "relay",
-        "gpio_pin": 17,
+        "gpio_pin": int(os.getenv("RELAY_1_PIN", "17")),
         "description": "主电源继电器",
         "initial_state": "off"
     },
     "relay_2": {
         "type": "relay",
-        "gpio_pin": 18,
+        "gpio_pin": int(os.getenv("RELAY_2_PIN", "18")),
         "description": "备用电源继电器",
         "initial_state": "off"
     },
@@ -90,8 +91,8 @@ DEVICE_CONFIG = {
     # 风扇设备
     "fan_1": {
         "type": "fan",
-        "gpio_pin": 22,
-        "pwm_pin": 23,  # PWM控制引脚
+        "gpio_pin": int(os.getenv("FAN_1_PIN", "22")),
+        "pwm_pin": int(os.getenv("FAN_1_PWM_PIN", "23")),
         "description": "主风扇",
         "initial_state": "off"
     },
@@ -99,7 +100,7 @@ DEVICE_CONFIG = {
     # 灯光设备
     "light_1": {
         "type": "light",
-        "gpio_pin": 24,
+        "gpio_pin": int(os.getenv("LIGHT_1_PIN", "24")),
         "description": "主照明灯",
         "initial_state": "off"
     },
@@ -300,6 +301,33 @@ JWT_CONFIG = {
     "secret_key": os.getenv("JWT_SECRET_KEY", "my_secret_key"),
     "algorithm": "HS256",
     "expiration_hours": 24
+}
+
+# 设备数据收集配置
+DATA_COLLECTION_CONFIG = {
+    "interval_seconds": int(os.getenv("DATA_COLLECTION_INTERVAL", "60")),
+    "collect_cpu": os.getenv("COLLECT_CPU", "True").lower() == "true",
+    "collect_memory": os.getenv("COLLECT_MEMORY", "True").lower() == "true",
+    "collect_disk": os.getenv("COLLECT_DISK", "True").lower() == "true",
+    "collect_network": os.getenv("COLLECT_NETWORK", "True").lower() == "true",
+    "collect_temperature": os.getenv("COLLECT_TEMPERATURE", "True").lower() == "true"
+}
+
+# 设备ID - 用于标识当前树莓派
+DEVICE_ID = os.getenv("DEVICE_ID", "raspberry_pi")
+
+# 命令执行配置
+COMMAND_CONFIG = {
+    "max_execution_time": int(os.getenv("MAX_COMMAND_EXECUTION_TIME", "30")),
+    "allowed_commands": [
+        "ls", "cd", "pwd", "cat", "date", "uname", "ps", "free", "df",
+        "ifconfig", "ip", "ping", "hostname", "uptime", "top", "python"
+    ],
+    "restricted_commands": [
+        "rm", "mv", "cp", "sudo", "su", "dd", "reboot", "shutdown", "apt", 
+        "apt-get", "systemctl"
+    ],
+    "log_commands": os.getenv("LOG_COMMANDS", "True").lower() == "true"
 }
 
 # 检查必要的环境变量

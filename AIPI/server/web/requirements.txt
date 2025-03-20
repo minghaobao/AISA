@@ -1,0 +1,22 @@
+# Web服务依赖
+flask>=2.3.2
+flask-socketio>=5.3.4
+flask-cors>=4.0.0
+werkzeug>=2.3.6
+python-socketio>=5.8.0
+eventlet>=0.33.3
+gunicorn>=21.2.0
+python-dotenv>=1.0.0
+
+# API依赖
+pyjwt>=2.7.0
+requests>=2.31.0
+
+# LangChain集成
+langchain>=0.0.267
+langchain-core>=0.1.9
+langchain-openai>=0.0.2
+openai>=0.28.1
+
+# MQTT集成
+paho-mqtt>=2.2.1 

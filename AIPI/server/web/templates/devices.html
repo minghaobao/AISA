@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>设备管理</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .device-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .device-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .device-card h3 { margin-top: 0; color: #3498db; }
+        .device-card .status { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px; }
+        .status.online { background: #d4edda; color: #155724; }
+        .status.offline { background: #f8d7da; color: #721c24; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .device-actions { margin-top: 15px; display: flex; gap: 10px; }
+        button { background: #3498db; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #2980b9; }
+        button.delete { background: #e74c3c; }
+        button.delete:hover { background: #c0392b; }
+        .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .metric { background: #f8f9fa; padding: 8px; border-radius: 4px; }
+        .metric-value { font-weight: bold; }
+        .add-form { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; display: none; }
+        input, textarea, select { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .form-buttons { display: flex; gap: 10px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .tag { background: #e1f5fe; color: #0288d1; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; display: flex; align-items: center; }
+        .tag button { background: none; color: #0288d1; padding: 0 5px; font-size: 1.2em; }
+        .filter-options { margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 8px; display: flex; gap: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 10px; }
+        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 600px; }
+        .modal h2 { margin-top: 0; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .alert { padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>设备管理</h1>
+        <button id="add-device-btn">添加设备</button>
+    </div>
+
+    <div class="filter-options">
+        <div class="filter-group">
+            <label for="status-filter">状态:</label>
+            <select id="status-filter">
+                <option value="all">全部</option>
+                <option value="online">在线</option>
+                <option value="offline">离线</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="tag-filter">标签:</label>
+            <select id="tag-filter">
+                <option value="">全部</option>
+                <!-- 标签选项将通过JavaScript动态添加 -->
+            </select>
+        </div>
+        <button id="refresh-devices">刷新设备列表</button>
+    </div>
+
+    <div id="alert-container"></div>
+    
+    <div class="device-grid" id="device-grid">
+        <!-- 设备卡片将通过JavaScript动态生成 -->
+        <div class="loader" id="devices-loader"></div>
+    </div>
+
+    <div class="add-form" id="device-form">
+        <h2 id="form-title">添加新设备</h2>
+        <div>
+            <label for="device-id">设备ID*</label>
+            <input type="text" id="device-id" placeholder="设备唯一标识符，如：rpi_001" required>
+        </div>
+        <div>
+            <label for="device-name">设备名称*</label>
+            <input type="text" id="device-name" placeholder="设备名称，如：树莓派1号" required>
+        </div>
+        <div>
+            <label for="device-description">设备描述</label>
+            <textarea id="device-description" placeholder="设备用途、位置等描述信息"></textarea>
+        </div>
+        <div>
+            <label for="device-location">位置</label>
+            <input type="text" id="device-location" placeholder="设备安装位置">
+        </div>
+        <div>
+            <label for="device-tags">标签 (逗号分隔)</label>
+            <input type="text" id="device-tags" placeholder="如：温度,湿度,客厅">
+        </div>
+        <div class="form-buttons">
+            <button id="save-device">保存</button>
+            <button id="cancel-device" class="delete">取消</button>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="confirm-modal">
+        <div class="modal">
+            <h2>确认删除</h2>
+            <p>您确定要删除此设备吗？此操作无法撤销。</p>
+            <div class="modal-buttons">
+                <button id="confirm-delete">确定删除</button>
+                <button id="cancel-delete">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let allDevices = [];
+        let allTags = new Set();
+        let currentDeviceId = null;
+        let isEditing = false;
+
+        // DOM元素
+        const deviceGrid = document.getElementById('device-grid');
+        const deviceForm = document.getElementById('device-form');
+        const formTitle = document.getElementById('form-title');
+        const addDeviceBtn = document.getElementById('add-device-btn');
+        const saveDeviceBtn = document.getElementById('save-device');
+        const cancelDeviceBtn = document.getElementById('cancel-device');
+        const statusFilter = document.getElementById('status-filter');
+        const tagFilter = document.getElementById('tag-filter');
+        const refreshDevicesBtn = document.getElementById('refresh-devices');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        const devicesLoader = document.getElementById('devices-loader');
+        const alertContainer = document.getElementById('alert-container');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDevices();
+            setupEventListeners();
+        });
+
+        // 设置事件监听
+        function setupEventListeners() {
+            // 添加设备按钮
+            addDeviceBtn.addEventListener('click', () => {
+                showDeviceForm(false);
+            });
+
+            // 保存设备
+            saveDeviceBtn.addEventListener('click', saveDevice);
+
+            // 取消编辑
+            cancelDeviceBtn.addEventListener('click', () => {
+                deviceForm.style.display = 'none';
+            });
+
+            // 过滤器改变
+            statusFilter.addEventListener('change', filterDevices);
+            tagFilter.addEventListener('change', filterDevices);
+
+            // 刷新设备列表
+            refreshDevicesBtn.addEventListener('click', loadDevices);
+
+            // 删除确认
+            confirmDeleteBtn.addEventListener('click', confirmDelete);
+            cancelDeleteBtn.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+                currentDeviceId = null;
+            });
+        }
+
+        // 加载设备列表
+        function loadDevices() {
+            devicesLoader.style.display = 'block';
+            deviceGrid.innerHTML = ''; // 清空设备网格
+            deviceGrid.appendChild(devicesLoader);
+
+            // 请求带状态的设备列表
+            fetch('/api/devices/?status=true')
+                .then(response => response.json())
+                .then(data => {
+                    allDevices = data.devices || [];
+                    // 收集所有标签
+                    allTags.clear();
+                    allDevices.forEach(device => {
+                        if (device.tags && Array.isArray(device.tags)) {
+                            device.tags.forEach(tag => allTags.add(tag));
+                        }
+                    });
+                    
+                    // 更新标签过滤器
+                    updateTagFilter();
+                    
+                    // 显示设备
+                    displayDevices(allDevices);
+                })
+                .catch(error => {
+                    showAlert(`加载设备列表失败: ${error.message}`, 'error');
+                    devicesLoader.style.display = 'none';
+                });
+        }
+
+        // 更新标签过滤器
+        function updateTagFilter() {
+            tagFilter.innerHTML = '<option value="">全部</option>';
+            allTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagFilter.appendChild(option);
+            });
+        }
+
+        // 显示设备
+        function displayDevices(devices) {
+            devicesLoader.style.display = 'none';
+            deviceGrid.innerHTML = '';
+            
+            if (devices.length === 0) {
+                deviceGrid.innerHTML = '<p>暂无设备</p>';
+                return;
+            }
+            
+            devices.forEach(device => {
+                const deviceCard = createDeviceCard(device);
+                deviceGrid.appendChild(deviceCard);
+            });
+        }
+
+        // 创建设备卡片
+        function createDeviceCard(device) {
+            const card = document.createElement('div');
+            card.className = 'device-card';
+            
+            // 设备状态判断
+            let statusClass = 'offline';
+            let statusText = '离线';
+            if (device.status === 'online') {
+                statusClass = 'online';
+                statusText = '在线';
+            } else if (device.status === 'error') {
+                statusClass = 'error';
+                statusText = '错误';
+            }
+            
+            // 格式化最后活跃时间
+            let lastActiveText = '未知';
+            if (device.last_active) {
+                const lastActive = new Date(device.last_active);
+                lastActiveText = lastActive.toLocaleString();
+            }
+            
+            // 设备指标
+            let metricsHtml = '';
+            if (device.cpu_percent !== null || device.memory_percent !== null || 
+                device.disk_percent !== null || device.cpu_temp !== null) {
+                metricsHtml = `
+                <div class="metrics">
+                    ${device.cpu_percent !== null ? `
+                    <div class="metric">
+                        <div>CPU使用率</div>
+                        <div class="metric-value">${device.cpu_percent}%</div>
+                    </div>` : ''}
+                    ${device.memory_percent !== null ? `
+                    <div class="metric">
+                        <div>内存使用率</div>
+                        <div class="metric-value">${device.memory_percent}%</div>
+                    </div>` : ''}
+                    ${device.disk_percent !== null ? `
+                    <div class="metric">
+                        <div>磁盘使用率</div>
+                        <div class="metric-value">${device.disk_percent}%</div>
+                    </div>` : ''}
+                    ${device.cpu_temp !== null ? `
+                    <div class="metric">
+                        <div>CPU温度</div>
+                        <div class="metric-value">${device.cpu_temp}°C</div>
+                    </div>` : ''}
+                </div>
+                `;
+            }
+            
+            // 创建标签HTML
+            let tagsHtml = '';
+            if (device.tags && device.tags.length > 0) {
+                tagsHtml = '<div class="tags">';
+                device.tags.forEach(tag => {
+                    tagsHtml += `<span class="tag">${tag}</span>`;
+                });
+                tagsHtml += '</div>';
+            }
+            
+            card.innerHTML = `
+                <h3>
+                    ${device.name || `设备 ${device.device_id}`}
+                    <span class="status ${statusClass}">${statusText}</span>
+                </h3>
+                <div>ID: ${device.device_id}</div>
+                ${device.description ? `<div>描述: ${device.description}</div>` : ''}
+                ${device.location ? `<div>位置: ${device.location}</div>` : ''}
+                <div>最后活跃: ${lastActiveText}</div>
+                ${tagsHtml}
+                ${metricsHtml}
+                <div class="device-actions">
+                    <button class="edit-device" data-id="${device.device_id}">编辑</button>
+                    <button class="delete-device" data-id="${device.device_id}">删除</button>
+                </div>
+            `;
+            
+            // 添加事件监听器
+            const editBtn = card.querySelector('.edit-device');
+            const deleteBtn = card.querySelector('.delete-device');
+            
+            editBtn.addEventListener('click', () => {
+                editDevice(device.device_id);
+            });
+            
+            deleteBtn.addEventListener('click', () => {
+                showDeleteConfirm(device.device_id);
+            });
+            
+            return card;
+        }
+
+        // 显示设备表单
+        function showDeviceForm(isEdit) {
+            isEditing = isEdit;
+            formTitle.textContent = isEdit ? '编辑设备' : '添加新设备';
+            
+            // 重置表单
+            if (!isEdit) {
+                document.getElementById('device-id').value = '';
+                document.getElementById('device-id').disabled = false;
+            } else {
+                document.getElementById('device-id').disabled = true;
+            }
+            
+            document.getElementById('device-name').value = '';
+            document.getElementById('device-description').value = '';
+            document.getElementById('device-location').value = '';
+            document.getElementById('device-tags').value = '';
+            
+            deviceForm.style.display = 'block';
+            
+            // 如果是编辑，加载设备数据
+            if (isEdit && currentDeviceId) {
+                loadDeviceData(currentDeviceId);
+            }
+        }
+
+        // 加载单个设备数据
+        function loadDeviceData(deviceId) {
+            fetch(`/api/devices/${deviceId}?status=false`)
+                .then(response => response.json())
+                .then(device => {
+                    document.getElementById('device-id').value = device.device_id;
+                    document.getElementById('device-name').value = device.name || '';
+                    document.getElementById('device-description').value = device.description || '';
+                    document.getElementById('device-location').value = device.location || '';
+                    
+                    // 处理标签
+                    if (device.tags && Array.isArray(device.tags)) {
+                        document.getElementById('device-tags').value = device.tags.join(', ');
+                    }
+                })
+                .catch(error => {
+                    showAlert(`加载设备数据失败: ${error.message}`, 'error');
+                });
+        }
+
+        // 保存设备
+        function saveDevice() {
+            // 获取表单数据
+            const deviceId = document.getElementById('device-id').value.trim();
+            const deviceName = document.getElementById('device-name').value.trim();
+            const deviceDescription = document.getElementById('device-description').value.trim();
+            const deviceLocation = document.getElementById('device-location').value.trim();
+            const deviceTagsStr = document.getElementById('device-tags').value.trim();
+            
+            // 验证必填字段
+            if (!deviceId || !deviceName) {
+                showAlert('设备ID和名称为必填项', 'error');
+                return;
+            }
+            
+            // 处理标签
+            let tags = [];
+            if (deviceTagsStr) {
+                tags = deviceTagsStr.split(',').map(tag => tag.trim()).filter(tag => tag);
+            }
+            
+            // 准备数据
+            const deviceData = {
+                device_id: deviceId,
+                name: deviceName,
+                description: deviceDescription,
+                location: deviceLocation,
+                tags: tags
+            };
+            
+            // 确定API端点和HTTP方法
+            const endpoint = isEditing ? `/api/devices/${currentDeviceId}` : '/api/devices/';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            // 发送请求
+            fetch(endpoint, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(deviceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    deviceForm.style.display = 'none';
+                    loadDevices(); // 重新加载设备列表
+                } else {
+                    showAlert(data.error || '操作失败', 'error');
+                }
+            })
+            .catch(error => {
+                showAlert(`保存设备失败: ${error.message}`, 'error');
+            });
+        }
+
+        // 编辑设备
+        function editDevice(deviceId) {
+            currentDeviceId = deviceId;
+            showDeviceForm(true);
+        }
+
+        // 显示删除确认
+        function showDeleteConfirm(deviceId) {
+            currentDeviceId = deviceId;
+            confirmModal.style.display = 'flex';
+        }
+
+        // 确认删除
+        function confirmDelete() {
+            if (!currentDeviceId) {
+                confirmModal.style.display = 'none';
+                return;
+            }
+            
+            fetch(`/api/devices/${currentDeviceId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                confirmModal.style.display = 'none';
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadDevices(); // 重新加载设备列表
+                } else {
+                    showAlert(data.error || '删除失败', 'error');
+                }
+            })
+            .catch(error => {
+                confirmModal.style.display = 'none';
+                showAlert(`删除设备失败: ${error.message}`, 'error');
+            });
+            
+            currentDeviceId = null;
+        }
+
+        // 过滤设备
+        function filterDevices() {
+            const statusValue = statusFilter.value;
+            const tagValue = tagFilter.value;
+            
+            let filteredDevices = [...allDevices];
+            
+            // 状态过滤
+            if (statusValue !== 'all') {
+                filteredDevices = filteredDevices.filter(device => device.status === statusValue);
+            }
+            
+            // 标签过滤
+            if (tagValue) {
+                filteredDevices = filteredDevices.filter(device => {
+                    if (!device.tags || !Array.isArray(device.tags)) return false;
+                    return device.tags.includes(tagValue);
+                });
+            }
+            
+            displayDevices(filteredDevices);
+        }
+
+        // 显示提示消息
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

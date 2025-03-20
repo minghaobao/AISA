@@ -37,6 +37,29 @@ except ImportError:
 # 设备状态存储
 device_status = {}
 
+def init_devices():
+    """
+    初始化所有设备，尝试加载和设置设备
+    :return: 初始化是否成功
+    """
+    try:
+        logger.info("正在初始化设备控制器...")
+        
+        # 检查是否在树莓派环境
+        if not IS_RASPBERRY_PI:
+            logger.warning("不在树莓派环境中，将使用模拟模式初始化设备")
+        
+        # 初始化设备状态
+        for device_id, config in DEVICE_CONFIG.items():
+            device_status[device_id] = "off"  # 默认关闭状态
+            logger.info(f"初始化设备状态: {device_id}")
+            
+        return True
+    
+    except Exception as e:
+        logger.error(f"初始化设备控制器时出错: {str(e)}")
+        return False
+
 def execute_device_action(device_id, action, parameters=None):
     """
     执行设备控制动作

@@ -235,4 +235,27 @@ MIT License
 
 - 项目主页: https://github.com/yourusername/ai-mqtt-langchain
 - 问题反馈: https://github.com/yourusername/ai-mqtt-langchain/issues
-- 邮件联系: your.email@example.com 
+- 邮件联系: your.email@example.com
+
+### Web界面
+
+项目现在包含一个基于Flask的Web界面，用于通过自然语言输入来控制树莓派：
+
+- 位于 `web/` 目录下
+- 提供直观的用户界面来发送命令和查看结果
+- 实时显示设备连接状态
+- 支持所有现代浏览器
+
+启动Web界面：
+```bash
+# Windows
+cd ai_mqtt_langchain/web
+start_web.bat
+
+# Linux/macOS
+cd ai_mqtt_langchain/web
+chmod +x start_web.sh
+./start_web.sh
+```
+
+在浏览器中访问 `http://localhost:5000` 使用Web界面。 
