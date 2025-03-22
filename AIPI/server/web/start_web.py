@@ -23,8 +23,8 @@ if sys.platform == 'win32':
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    # 在Windows下不指定encoding参数，避免冲突
-    **({"encoding": 'utf-8'} if sys.platform != 'win32' else {})
+    # 在Python 3.9+中才使用encoding参数
+    **({"encoding": 'utf-8'} if sys.version_info >= (3, 9) else {})
 )
 logger = logging.getLogger("web_starter")
 

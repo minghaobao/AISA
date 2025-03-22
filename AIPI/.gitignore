@@ -23,6 +23,8 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv/
+
 
 # 环境配置
 .env

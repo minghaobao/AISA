@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AIPI 系统控制面板 (模拟)</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+        .card {
+            flex: 1 1 300px;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .metric {
+            text-align: center;
+            flex: 1;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-online {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .status-offline {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controls {
+            margin-top: 15px;
+        }
+        button {
+            background-color: #3498db;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .command-input {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .logs {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 5px;
+        }
+        .timestamp {
+            color: #95a5a6;
+            margin-right: 5px;
+        }
+        #refreshButton {
+            background-color: #27ae60;
+        }
+        #refreshButton:hover {
+            background-color: #219d55;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AIPI 系统控制面板 (模拟)</h1>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>设备概览</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">总设备数</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">在线设备</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">告警数</div>
+                    </div>
+                </div>
+                <button id="refreshButton">刷新数据</button>
+            </div>
+            
+            <div class="card" id="device1">
+                <h3>设备: rpi_001</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="temp1">25.5°C</div>
+                        <div class="metric-label">温度</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="humidity1">45.0%</div>
+                        <div class="metric-label">湿度</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="cpu1">15.2%</div>
+                        <div class="metric-label">CPU负载</div>
+                    </div>
+                </div>
+                <div>状态: <span class="status status-online" id="status1">在线</span></div>
+                <div class="controls">
+                    <button onclick="sendCommand('rpi_001', 'reboot')">重启设备</button>
+                    <button onclick="sendCommand('rpi_001', 'gpio_on')">开启GPIO</button>
+                    <button onclick="sendCommand('rpi_001', 'gpio_off')">关闭GPIO</button>
+                </div>
+            </div>
+            
+            <div class="card" id="device2">
+                <h3>设备: rpi_002</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="temp2">26.8°C</div>
+                        <div class="metric-label">温度</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="humidity2">50.2%</div>
+                        <div class="metric-label">湿度</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="cpu2">22.4%</div>
+                        <div class="metric-label">CPU负载</div>
+                    </div>
+                </div>
+                <div>状态: <span class="status status-online" id="status2">在线</span></div>
+                <div class="controls">
+                    <button onclick="sendCommand('rpi_002', 'reboot')">重启设备</button>
+                    <button onclick="sendCommand('rpi_002', 'gpio_on')">开启GPIO</button>
+                    <button onclick="sendCommand('rpi_002', 'gpio_off')">关闭GPIO</button>
+                </div>
+            </div>
+        </div>
+        
+        <h2>自然语言命令</h2>
+        <div class="command-input">
+            <input type="text" id="commandInput" placeholder="输入自然语言命令，例如: '打开所有设备的灯'" onkeydown="if(event.keyCode===13) processCommand()">
+            <button onclick="processCommand()">发送命令</button>
+        </div>
+        
+        <h2>系统日志</h2>
+        <div class="logs" id="logs">
+            <div class="log-entry"><span class="timestamp">[2025-03-22 00:40:00]</span> 系统启动完成</div>
+            <div class="log-entry"><span class="timestamp">[2025-03-22 00:40:05]</span> 设备 rpi_001 已连接</div>
+            <div class="log-entry"><span class="timestamp">[2025-03-22 00:40:10]</span> 设备 rpi_002 已连接</div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据更新
+        let deviceData = {
+            "rpi_001": {
+                "temperature": 25.5,
+                "humidity": 45.0,
+                "cpu_load": 15.2,
+                "status": "online"
+            },
+            "rpi_002": {
+                "temperature": 26.8,
+                "humidity": 50.2,
+                "cpu_load": 22.4,
+                "status": "online"
+            }
+        };
+        
+        function updateDeviceData() {
+            // 模拟数据变化
+            for (let deviceId in deviceData) {
+                deviceData[deviceId].temperature += (0.5 - Math.random());
+                deviceData[deviceId].humidity += (0.3 - Math.random() * 0.6);
+                deviceData[deviceId].cpu_load = 10 + Math.random() * 30;
+                
+                // 随机变化状态
+                if (Math.random() > 0.95) {
+                    deviceData[deviceId].status = deviceData[deviceId].status === "online" ? "offline" : "online";
+                }
+            }
+            
+            // 更新界面
+            document.getElementById("temp1").textContent = deviceData["rpi_001"].temperature.toFixed(1) + "°C";
+            document.getElementById("humidity1").textContent = deviceData["rpi_001"].humidity.toFixed(1) + "%";
+            document.getElementById("cpu1").textContent = deviceData["rpi_001"].cpu_load.toFixed(1) + "%";
+            document.getElementById("status1").textContent = deviceData["rpi_001"].status === "online" ? "在线" : "离线";
+            document.getElementById("status1").className = "status " + (deviceData["rpi_001"].status === "online" ? "status-online" : "status-offline");
+            
+            document.getElementById("temp2").textContent = deviceData["rpi_002"].temperature.toFixed(1) + "°C";
+            document.getElementById("humidity2").textContent = deviceData["rpi_002"].humidity.toFixed(1) + "%";
+            document.getElementById("cpu2").textContent = deviceData["rpi_002"].cpu_load.toFixed(1) + "%";
+            document.getElementById("status2").textContent = deviceData["rpi_002"].status === "online" ? "在线" : "离线";
+            document.getElementById("status2").className = "status " + (deviceData["rpi_002"].status === "online" ? "status-online" : "status-offline");
+        }
+        
+        function sendCommand(deviceId, command) {
+            const timestamp = new Date().toLocaleTimeString();
+            addLogEntry(`发送命令到设备 ${deviceId}: ${command}`);
+            
+            // 模拟命令结果
+            setTimeout(() => {
+                addLogEntry(`设备 ${deviceId} 命令 ${command} 执行成功`);
+            }, 1000);
+        }
+        
+        function processCommand() {
+            const command = document.getElementById("commandInput").value;
+            if (!command.trim()) return;
+            
+            addLogEntry(`处理自然语言命令: ${command}`);
+            document.getElementById("commandInput").value = "";
+            
+            // 模拟LangChain处理
+            setTimeout(() => {
+                if (command.includes("打开") && command.includes("灯")) {
+                    addLogEntry("分析命令: 开灯操作");
+                    sendCommand("rpi_001", "gpio_on");
+                    sendCommand("rpi_002", "gpio_on");
+                } else if (command.includes("关闭") && command.includes("灯")) {
+                    addLogEntry("分析命令: 关灯操作");
+                    sendCommand("rpi_001", "gpio_off");
+                    sendCommand("rpi_002", "gpio_off");
+                } else if (command.includes("重启")) {
+                    addLogEntry("分析命令: 重启操作");
+                    sendCommand("rpi_001", "reboot");
+                    sendCommand("rpi_002", "reboot");
+                } else {
+                    addLogEntry("无法理解的命令，请重试");
+                }
+            }, 2000);
+        }
+        
+        function addLogEntry(message) {
+            const logs = document.getElementById("logs");
+            const now = new Date().toISOString().replace("T", " ").substring(0, 19);
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+            entry.innerHTML = `<span class="timestamp">[${now}]</span> ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        // 初始化界面并设置更新
+        document.getElementById("refreshButton").addEventListener("click", updateDeviceData);
+        
+        // 定期更新数据
+        setInterval(updateDeviceData, 5000);
+    </script>
+</body>
+</html> 

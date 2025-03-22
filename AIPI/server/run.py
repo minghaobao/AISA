@@ -35,7 +35,7 @@ def start_web_server(background=True):
     启动Web服务器
     :param background: 是否在后台运行
     """
-    from web_control import start_web_server as web_start
+    from api_web import start_web_server as web_start # type: ignore
     
     logger.info("正在启动Web服务器...")
     

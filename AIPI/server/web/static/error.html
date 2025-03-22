@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>仪表盘加载错误</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .error-container { background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        h2 { color: #721c24; }
+    </style>
+</head>
+<body>
+    <h2>仪表盘加载失败</h2>
+    <div class="error-container">
+        <p>无法加载仪表盘数据。请确认以下事项：</p>
+        <ol>
+            <li>Grafana服务已经启动并运行</li>
+            <li>GRAFANA_URL环境变量已正确设置（默认：http://localhost:3000）</li>
+            <li>已创建并导入仪表盘到Grafana</li>
+        </ol>
+        <p>错误信息：<span id="error-message">未知错误</span></p>
+    </div>
+    <p>
+        <button onclick="window.location.reload()">重试</button>
+        <button onclick="window.parent.document.querySelector('.tab[data-tab=command]').click()">返回命令控制</button>
+    </p>
+    <script>
+        // 尝试从URL获取错误信息
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = urlParams.get('error') || '未知错误';
+        document.getElementById('error-message').textContent = decodeURIComponent(errorMessage);
+    </script>
+</body>
+</html> 
